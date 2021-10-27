@@ -1,0 +1,19 @@
+{
+  "name": "paragraphic",
+  "version": "1.0.0",
+  "description": "A WebGL sandbox",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx parcel src/index.html --open",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "twgl.js": "^4.21.2"
+  },
+  "devDependencies": {
+    "@parcel/transformer-glsl": "^2.0.0",
+    "parcel": "^2.0.0"
+  }
+}
