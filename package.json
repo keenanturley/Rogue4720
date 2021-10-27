@@ -2,9 +2,9 @@
   "name": "paragraphic",
   "version": "1.0.0",
   "description": "A WebGL sandbox",
-  "main": "index.js",
   "scripts": {
     "start": "npx parcel src/index.html --open",
+    "build": "npx parcel build src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
