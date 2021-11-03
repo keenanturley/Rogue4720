@@ -1,7 +1,7 @@
 {
-  "name": "paragraphic",
+  "name": "rogue4720",
   "version": "1.0.0",
-  "description": "A WebGL sandbox",
+  "description": "A WebGL almost-roguelite game",
   "scripts": {
     "start": "npx parcel src/index.html --open",
     "build": "npx parcel build src/index.html",

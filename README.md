@@ -1,6 +1,10 @@
-# Paragraphic
+# Rogue4720 
 
-A WebGL sandbox
+A WebGL almost-roguelite game
+
+Made with TWGL for a class project:
+
+CAP 4720 | Computer Graphics | Fall 2021
 
 ## Development
 
