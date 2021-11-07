@@ -5,6 +5,15 @@ module.exports = {
   },
   extends: [
     'airbnb-base',
+    'airbnb-typescript/base',
+  ],
+  overrides: [
+    {
+      files: ['*.ts'],
+      parserOptions: {
+        project: ['./tsconfig.json'],
+      }
+    }
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -15,5 +24,6 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
+    "no-param-reassign": [2, { "props": false }]
   },
 };
