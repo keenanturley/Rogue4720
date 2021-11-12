@@ -19,12 +19,12 @@ export default class OrthographicCamera extends Camera {
 
   constructor(
     transform: Transform = new Transform(),
-    left: number = -1.0,
-    right: number = 1.0,
-    bottom: number = -1.0,
-    top: number = 1.0,
+    left: number = -10.0,
+    right: number = 10.0,
+    bottom: number = -10.0,
+    top: number = 10.0,
     near: number = 0.0,
-    far: number = -1.0,
+    far: number = -100.0,
   ) {
     super();
 
@@ -57,6 +57,6 @@ export default class OrthographicCamera extends Camera {
   }
 
   getViewMatrix(): m4.Mat4 {
-    return this.transform.getMatrix();
+    return m4.inverse(this.transform.getMatrix());
   }
 }

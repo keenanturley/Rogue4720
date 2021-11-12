@@ -15,10 +15,10 @@ export default class PerspectiveCamera extends Camera {
 
   constructor(
     transform: Transform = new Transform(),
-    fov: number,
-    aspect: number,
-    zNear: number,
-    zFar: number,
+    fov: number = 60,
+    aspect: number = 1,
+    zNear: number = 0.1,
+    zFar: number = 1000,
   ) {
     super();
 
@@ -50,6 +50,6 @@ export default class PerspectiveCamera extends Camera {
   }
 
   private static toRadians(degrees: number) {
-    return degrees * (180 / Math.PI);
+    return degrees * (Math.PI / 180.0);
   }
 }

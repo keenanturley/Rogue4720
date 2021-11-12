@@ -1,35 +1,57 @@
 import * as twgl from 'twgl.js';
+import Material from './renderer/Material';
+import Mesh from './renderer/Mesh';
+import MeshNode from './renderer/MeshNode';
+import PerspectiveCamera from './renderer/PerspectiveCamera';
+import Renderer from './renderer/Renderer';
+import Scene from './renderer/Scene';
+import Shader from './renderer/Shader';
+import Transform from './renderer/Transform';
 
-const main = async () => {
+(async () => {
   const canvas = document.getElementById('canvas') as HTMLCanvasElement;
   const gl = canvas.getContext('webgl2');
 
-  const vs = await import('./shaders/basic.vert') as string;
-  const fs = await import('./shaders/basic.frag') as string;
+  // Create Shader and Material
+  const vs = await import('./shaders/test.vert') as string;
+  const fs = await import('./shaders/test.frag') as string;
+  const shader = new Shader(vs, fs);
+  const material = new Material(shader);
 
-  const programInfo = twgl.createProgramInfo(gl, [vs, fs]);
-  const arrays = {
-    position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
+  // Create Mesh and MeshNode
+  const cubeArrays = twgl.primitives.createCubeVertices(5);
+  const mesh = new Mesh(
+    cubeArrays.position,
+    cubeArrays.normal,
+    cubeArrays.texcoord,
+    cubeArrays.indices,
+  );
+  const meshNode = new MeshNode(new Transform([0.0, 0.0, -10.0], [0.0, 0.0, 0.0]), mesh, material);
+
+  // Create a Scene and insert the MeshNode as the root
+  const scene = new Scene(meshNode);
+
+  // Create a Camera to view the scene with
+  const camera = new PerspectiveCamera();
+
+  // Create the renderer and begin rendering
+  const preRender = () => {
+    camera.aspect = gl.canvas.width / gl.canvas.height;
+    meshNode.localTransform.rotation = twgl.v3.add(
+      meshNode.localTransform.rotation,
+      [1.0, 1.0, 1.0],
+    );
   };
-  const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
+  const renderer = new Renderer(gl, scene, camera, preRender);
 
-  function render(time) {
-    twgl.resizeCanvasToDisplaySize(gl.canvas);
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  // During development, stop rendering after the module is refreshed
+  // @ts-ignore module.hot is a Parcel construct
+  module.hot.dispose(() => {
+    renderer.stopRendering();
+  });
 
-    const uniforms = {
-      time: time * 0.001,
-      resolution: [gl.canvas.width, gl.canvas.height],
-    };
-
-    gl.useProgram(programInfo.program);
-    twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
-    twgl.setUniforms(programInfo, uniforms);
-    twgl.drawBufferInfo(gl, bufferInfo);
-
-    requestAnimationFrame(render);
-  }
-  requestAnimationFrame(render);
-};
-
-main();
+  // Begin rendering
+  requestAnimationFrame((time) => {
+    renderer.render(time);
+  });
+})();

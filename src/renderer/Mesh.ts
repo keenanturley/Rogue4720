@@ -1,4 +1,4 @@
-import { BufferInfo, createBufferInfoFromArrays } from 'twgl.js';
+import { BufferInfo, createBufferInfoFromArrays, primitives } from 'twgl.js';
 
 /**
  * A less-generalized Mesh representation. For simplicity we are sticking with
@@ -28,19 +28,21 @@ export default class Mesh {
 
   static NUM_COMPONENTS_INDICES = 3;
 
-  position: Float32Array;
+  position: primitives.TypedArray;
 
-  normal?: Float32Array;
+  normal?: primitives.TypedArray;
 
-  uv?: Float32Array;
+  uv?: primitives.TypedArray;
 
-  indices?: Float32Array;
+  indices?: primitives.TypedArray;
+
+  bufferInfo?: BufferInfo;
 
   constructor(
-    position: Float32Array,
-    normal?: Float32Array,
-    uv?: Float32Array,
-    indices?: Float32Array,
+    position: primitives.TypedArray,
+    normal?: primitives.TypedArray,
+    uv?: primitives.TypedArray,
+    indices?: primitives.TypedArray,
   ) {
     this.position = position;
     this.normal = normal;
@@ -55,21 +57,30 @@ export default class Mesh {
         data: this.position,
       },
       ...(this.normal && {
-        numComponents: Mesh.NUM_COMPONENTS_NORMAL,
-        data: this.normal,
+        normal: {
+          numComponents: Mesh.NUM_COMPONENTS_NORMAL,
+          data: this.normal,
+        },
       }),
       ...(this.uv && {
-        numComponents: Mesh.NUM_COMPONENTS_UV,
-        data: this.uv,
+        uv: {
+          numComponents: Mesh.NUM_COMPONENTS_UV,
+          data: this.uv,
+        },
       }),
       ...(this.indices && {
-        numComponents: Mesh.NUM_COMPONENTS_INDICES,
-        data: this.indices,
+        indices: {
+          numComponents: Mesh.NUM_COMPONENTS_INDICES,
+          data: this.indices,
+        },
       }),
     };
   }
 
-  createBufferInfo(gl): BufferInfo {
-    return createBufferInfoFromArrays(gl, this.createArrays());
+  getBufferInfo(gl): BufferInfo {
+    if (!this.bufferInfo) {
+      this.bufferInfo = createBufferInfoFromArrays(gl, this.createArrays());
+    }
+    return this.bufferInfo;
   }
 }
