@@ -24,33 +24,8 @@ import Model from './renderer/Model';
   );
   console.log(test);
 
-  const meshNodes = test.getMeshNodes();
-  console.log(test.getMeshNodes());
-
-  /* const loader = new OBJLoader();
-  const model = await loader.loadAsync('https://static.observableusercontent.com/files/c1fc0d2fbf2bed5669afae79d4c0e896701b9e7257924c92a873b376bb2e65d7c217aeb899c11088d648cf89535a89089cdabff9da336ba7e6a739dd5e20a5cf');
-  const { children } = model;
-  const meshNodes = children
-    .filter((child) => child instanceof THREEMesh)
-    .map((child) => {
-      const { geometry } = child as THREEMesh;
-      return new Mesh(
-        new Float32Array(geometry.getAttribute('position').array),
-        new Float32Array(geometry.getAttribute('normal').array),
-        new Float32Array(geometry.getAttribute('uv').array),
-      );
-    })
-    .map((mesh) => new MeshNode(new Transform([0.0, -5, -25.0]), mesh, material)); */
-
-  // const cubeArrays = twgl.primitives.createCubeVertices(5);
-  // const mesh = new Mesh(
-  //   cubeArrays.position,
-  //   cubeArrays.normal,
-  //   cubeArrays.texcoord,
-  //   cubeArrays.indices,
-  // );
-  // const meshNode = new MeshNode(
-  // new Transform([0.0, 0.0, -24.0], [0.0, 0.0, 0.0]), mesh, material);
+  const meshNodes = test.MeshNodes;
+  console.log(test.MeshNodes);
 
   // Create a Scene and insert the MeshNode as the root
   const scene = new Scene();

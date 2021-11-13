@@ -21,7 +21,7 @@ export default class Model {
     this.m_meshNodes = meshNodes;
   }
 
-  public getMeshNodes(): MeshNode[] {
+  get MeshNodes(): MeshNode[] {
     return this.m_meshNodes;
   }
 
