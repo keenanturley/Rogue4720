@@ -5,6 +5,8 @@ export default class Shader {
 
   fragmentShader: string;
 
+  programInfo?: ProgramInfo;
+
   constructor(vertexShader: string, fragmentShader: string) {
     this.vertexShader = vertexShader;
     this.fragmentShader = fragmentShader;
@@ -32,7 +34,10 @@ export default class Shader {
     return new Shader(vertexShader, fragmentShader);
   }
 
-  createProgramInfo(gl: WebGLRenderingContext): ProgramInfo {
-    return createProgramInfo(gl, [this.vertexShader, this.fragmentShader]);
+  getProgramInfo(gl: WebGLRenderingContext): ProgramInfo {
+    if (!this.programInfo) {
+      this.programInfo = createProgramInfo(gl, [this.vertexShader, this.fragmentShader]);
+    }
+    return this.programInfo;
   }
 }

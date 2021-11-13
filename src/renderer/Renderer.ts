@@ -20,6 +20,8 @@ export default class Renderer {
 
   preRender: () => void;
 
+  frames: number;
+
   constructor(
     gl: WebGL2RenderingContext,
     scene: Scene = new Scene(),
@@ -39,6 +41,11 @@ export default class Renderer {
 
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
+
+    setInterval(() => {
+      console.log(`FPS: ${this.frames}`);
+      this.frames = 0;
+    }, 1000);
   }
 
   drawScene(time: number) {
@@ -60,7 +67,7 @@ export default class Renderer {
       // Get the mesh's buffer info
       const bufferInfo = node.mesh.getBufferInfo(this.gl);
 
-      const programInfo = node.material.shader.createProgramInfo(this.gl);
+      const programInfo = node.material.shader.getProgramInfo(this.gl);
       this.gl.useProgram(programInfo.program);
 
       setBuffersAndAttributes(this.gl, programInfo, bufferInfo);
@@ -83,6 +90,8 @@ export default class Renderer {
 
   render(time: number) {
     this.preRender();
+
+    this.frames += 1;
 
     resizeCanvasToDisplaySize(this.gl.canvas);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
