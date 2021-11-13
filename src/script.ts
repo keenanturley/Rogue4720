@@ -1,14 +1,10 @@
 import * as twgl from 'twgl.js';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { Mesh as THREEMesh } from 'three';
 import Material from './renderer/Material';
-import Mesh from './renderer/Mesh';
-import MeshNode from './renderer/MeshNode';
 import PerspectiveCamera from './renderer/PerspectiveCamera';
 import Renderer from './renderer/Renderer';
 import Scene from './renderer/Scene';
 import Shader from './renderer/Shader';
-import Transform from './renderer/Transform';
+import Model from './renderer/Model';
 
 (async () => {
   const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -21,7 +17,17 @@ import Transform from './renderer/Transform';
   const material = new Material(shader);
 
   // Create Mesh and MeshNode
-  const loader = new OBJLoader();
+  // ! Debug test for model loading data
+  const test = await Model.fromURL(
+    'https://static.observableusercontent.com/files/c1fc0d2fbf2bed5669afae79d4c0e896701b9e7257924c92a873b376bb2e65d7c217aeb899c11088d648cf89535a89089cdabff9da336ba7e6a739dd5e20a5cf',
+    material,
+  );
+  console.log(test);
+
+  const meshNodes = test.getMeshNodes();
+  console.log(test.getMeshNodes());
+
+  /* const loader = new OBJLoader();
   const model = await loader.loadAsync('https://static.observableusercontent.com/files/c1fc0d2fbf2bed5669afae79d4c0e896701b9e7257924c92a873b376bb2e65d7c217aeb899c11088d648cf89535a89089cdabff9da336ba7e6a739dd5e20a5cf');
   const { children } = model;
   const meshNodes = children
@@ -34,7 +40,7 @@ import Transform from './renderer/Transform';
         new Float32Array(geometry.getAttribute('uv').array),
       );
     })
-    .map((mesh) => new MeshNode(new Transform([0.0, -5, -25.0]), mesh, material));
+    .map((mesh) => new MeshNode(new Transform([0.0, -5, -25.0]), mesh, material)); */
 
   // const cubeArrays = twgl.primitives.createCubeVertices(5);
   // const mesh = new Mesh(
@@ -43,7 +49,8 @@ import Transform from './renderer/Transform';
   //   cubeArrays.texcoord,
   //   cubeArrays.indices,
   // );
-  // const meshNode = new MeshNode(new Transform([0.0, 0.0, -24.0], [0.0, 0.0, 0.0]), mesh, material);
+  // const meshNode = new MeshNode(
+  // new Transform([0.0, 0.0, -24.0], [0.0, 0.0, 0.0]), mesh, material);
 
   // Create a Scene and insert the MeshNode as the root
   const scene = new Scene();
