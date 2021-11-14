@@ -1,4 +1,6 @@
-import { BufferInfo, createBufferInfoFromArrays, primitives } from 'twgl.js';
+import {
+  BufferInfo, createBufferInfoFromArrays, primitives, m4,
+} from 'twgl.js';
 
 /**
  * A less-generalized Mesh representation. For simplicity we are sticking with
@@ -28,6 +30,8 @@ export default class Mesh {
 
   static NUM_COMPONENTS_INDICES = 3;
 
+  modelMatrix: m4.Mat4;
+
   position: primitives.TypedArray;
 
   normal?: primitives.TypedArray;
@@ -48,6 +52,7 @@ export default class Mesh {
     this.normal = normal;
     this.uv = uv;
     this.indices = indices;
+    this.modelMatrix = m4.identity();
   }
 
   createArrays() {

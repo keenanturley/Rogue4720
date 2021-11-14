@@ -1,5 +1,5 @@
 import { m4 } from 'twgl.js';
 
 export default abstract class Camera {
-  abstract getViewProjectionMatrix(): m4.Mat4;
+  abstract get ViewProjectionMatrix(): m4.Mat4;
 }
