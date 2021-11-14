@@ -1,4 +1,4 @@
-import { m4, v3 } from 'twgl.js';
+import * as twgl from 'twgl.js';
 import { Group, Mesh as THREEMesh } from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import Mesh from './Mesh';
@@ -25,12 +25,6 @@ export default class Model {
     return this.m_meshNodes;
   }
 
-  set WorldPosition(coordinate: v3.Vec3) {
-    this.m_meshNodes.forEach((node) => {
-      m4.translate(node.mesh.modelMatrix, coordinate, node.mesh.modelMatrix);
-    });
-  }
-
   static createMeshArray(model: Group, material: Material): MeshNode[] {
     const { children } = model;
     const meshNodes = children.filter((child) => child instanceof THREEMesh)
@@ -42,7 +36,7 @@ export default class Model {
           new Float32Array(geometry.getAttribute('uv').array),
         );
       })
-      .map((mesh) => new MeshNode(new Transform(), mesh, material));
+      .map((mesh) => new MeshNode(new Transform([0.0, -5, -25.0]), mesh, material));
 
     return meshNodes;
   }

@@ -38,7 +38,7 @@ export default class OrthographicCamera extends Camera {
     this.far = far;
   }
 
-  get ViewProjectionMatrix(): m4.Mat4 {
+  getViewProjectionMatrix(): m4.Mat4 {
     const projectionMatrix = this.getProjectionMatrix();
     const viewMatrix = this.getViewMatrix();
 

@@ -17,16 +17,15 @@ import Model from './renderer/Model';
   const material = new Material(shader);
 
   // Create Mesh and MeshNode
+  // ! Debug test for model loading data
   const test = await Model.fromURL(
     'https://static.observableusercontent.com/files/c1fc0d2fbf2bed5669afae79d4c0e896701b9e7257924c92a873b376bb2e65d7c217aeb899c11088d648cf89535a89089cdabff9da336ba7e6a739dd5e20a5cf',
     material,
   );
-
-  const position = twgl.v3.create(0.0, -5.0, -25.0);
-
-  test.WorldPosition = position;
+  console.log(test);
 
   const meshNodes = test.MeshNodes;
+  console.log(test.MeshNodes);
 
   // Create a Scene and insert the MeshNode as the root
   const scene = new Scene();

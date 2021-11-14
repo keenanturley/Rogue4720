@@ -31,16 +31,12 @@ export default class SceneNode {
     this.children = new Set<SceneNode>();
   }
 
-  public get Parent(): SceneNode {
+  getParent(): SceneNode {
     return this.parent;
   }
 
-  public get Children(): Set<SceneNode> {
+  getChildren(): Set<SceneNode> {
     return this.children;
-  }
-
-  public get Transform() {
-    return this.localTransform;
   }
 
   addChild(node: SceneNode) {

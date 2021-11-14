@@ -29,7 +29,7 @@ export default class PerspectiveCamera extends Camera {
     this.zFar = zFar;
   }
 
-  get ViewProjectionMatrix(): m4.Mat4 {
+  getViewProjectionMatrix(): m4.Mat4 {
     const projectionMatrix = this.getProjectionMatrix();
     const viewMatrix = this.getViewMatrix();
 
