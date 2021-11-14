@@ -59,8 +59,8 @@ export default class Renderer {
 
   drawNode(node: SceneNode, parentMatrix: m4.Mat4) {
     // Compute this node's matrix
-    let matrix = node.localTransform.getMatrix();
-    matrix = m4.multiply(matrix, parentMatrix);
+    let transformMatrix = node.localTransform.getMatrix();
+    transformMatrix = m4.multiply(transformMatrix, parentMatrix);
 
     // Draw self
     if (node instanceof MeshNode) {
@@ -77,15 +77,16 @@ export default class Renderer {
       setUniforms(programInfo, this.rendererUniforms);
 
       // Compute matrix
-      const projectedMatrix = m4.multiply(this.camera.getViewProjectionMatrix(), matrix);
-      setUniforms(programInfo, { u_matrix: projectedMatrix });
+      const modelMatrix = m4.multiply(node.mesh.modelMatrix, transformMatrix);
+      const modelViewProjectiondMatrix = m4.multiply(this.camera.ViewProjectionMatrix, modelMatrix);
+      setUniforms(programInfo, { u_matrix: modelViewProjectiondMatrix });
 
       // Render
       drawBufferInfo(this.gl, bufferInfo);
     }
 
     // Draw all children
-    node.getChildren().forEach((child) => this.drawNode(child, matrix));
+    node.Children.forEach((child) => this.drawNode(child, transformMatrix));
   }
 
   render(time: number) {
