@@ -5,6 +5,7 @@ import Renderer from './renderer/Renderer';
 import Scene from './renderer/Scene';
 import Shader from './renderer/Shader';
 import Model from './renderer/Model';
+import Texture from './renderer/Texture';
 
 (async () => {
   const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -15,6 +16,8 @@ import Model from './renderer/Model';
   const fs = await import('./shaders/test.frag') as string;
   const shader = new Shader(vs, fs);
   const material = new Material(shader);
+  const texture = new Texture(gl, 'https://static.observableusercontent.com/files/0e7b80379c6272e6e0431669f855b19032a3d1e856b7900215569c92218c31a22c0c6906e2ce2c56dcd68608bd566170744724d008d59d8cf04fa3803f318a54');
+  console.log(texture);
 
   // Create Mesh and MeshNode
   // ! Debug test for model loading data
@@ -22,10 +25,7 @@ import Model from './renderer/Model';
     'https://static.observableusercontent.com/files/c1fc0d2fbf2bed5669afae79d4c0e896701b9e7257924c92a873b376bb2e65d7c217aeb899c11088d648cf89535a89089cdabff9da336ba7e6a739dd5e20a5cf',
     material,
   );
-  console.log(test);
-
   const meshNodes = test.MeshNodes;
-  console.log(test.MeshNodes);
 
   // Create a Scene and insert the MeshNode as the root
   const scene = new Scene();

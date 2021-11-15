@@ -1,4 +1,3 @@
-import * as twgl from 'twgl.js';
 import { Group, Mesh as THREEMesh } from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import Mesh from './Mesh';
