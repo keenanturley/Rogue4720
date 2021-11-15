@@ -43,6 +43,7 @@ export default class Renderer {
     gl.enable(gl.CULL_FACE);
 
     setInterval(() => {
+      // eslint-disable-next-line no-console
       console.log(`FPS: ${this.frames}`);
       this.frames = 0;
     }, 1000);
