@@ -34,6 +34,13 @@ export default class Shader {
     return new Shader(vertexShader, fragmentShader);
   }
 
+  /**
+   * Gets the ProgramInfo object created from the compilation of this Shader.
+   * If the ProgramInfo hasn't been created yet, this will create and cache it.
+   *
+   * @param gl WebGL context
+   * @returns Compiled shader linked to a program
+   */
   getProgramInfo(gl: WebGLRenderingContext): ProgramInfo {
     if (!this.programInfo) {
       this.programInfo = createProgramInfo(gl, [this.vertexShader, this.fragmentShader]);

@@ -1,23 +1,17 @@
 import * as twgl from 'twgl.js';
-import Material from './renderer/Material';
 import PerspectiveCamera from './renderer/PerspectiveCamera';
 import Renderer from './renderer/Renderer';
 import Scene from './renderer/Scene';
-import Shader from './renderer/Shader';
 import Model from './renderer/Model';
-import Texture from './renderer/Texture';
+import BaseColorMaterial from './renderer/BaseColorMaterial';
+import Color from './renderer/Color';
 
 (async () => {
   const canvas = document.getElementById('canvas') as HTMLCanvasElement;
   const gl = canvas.getContext('webgl2');
 
   // Create Shader and Material
-  const vs = await import('./shaders/test.vert') as string;
-  const fs = await import('./shaders/test.frag') as string;
-  const shader = new Shader(vs, fs);
-  const material = new Material(shader);
-  const texture = new Texture(gl, 'https://static.observableusercontent.com/files/0e7b80379c6272e6e0431669f855b19032a3d1e856b7900215569c92218c31a22c0c6906e2ce2c56dcd68608bd566170744724d008d59d8cf04fa3803f318a54');
-  console.log(texture);
+  const material = new BaseColorMaterial(Color.fromHex('#302459'));
 
   // Create Mesh and MeshNode
   // ! Debug test for model loading data

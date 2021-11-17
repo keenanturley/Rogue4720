@@ -26,11 +26,16 @@ export default class Transform {
      */
   getMatrix(): m4.Mat4 {
     const matrix = m4.identity();
-    m4.multiply(m4.scaling(this.scale), matrix, matrix);
-    m4.multiply(m4.rotationX(Transform.toRadians(this.rotation[0])), matrix, matrix);
-    m4.multiply(m4.rotationY(Transform.toRadians(this.rotation[1])), matrix, matrix);
-    m4.multiply(m4.rotationZ(Transform.toRadians(this.rotation[2])), matrix, matrix);
-    m4.multiply(m4.translation(this.position), matrix, matrix);
+    m4.translate(matrix, this.position, matrix);
+    m4.rotateX(matrix, Transform.toRadians(this.rotation[0]), matrix);
+    m4.rotateY(matrix, Transform.toRadians(this.rotation[1]), matrix);
+    m4.rotateZ(matrix, Transform.toRadians(this.rotation[2]), matrix);
+    m4.scale(matrix, this.scale, matrix);
+    // m4.multiply(m4.scaling(this.scale), matrix, matrix);
+    // m4.multiply(m4.rotationX(Transform.toRadians(this.rotation[0])), matrix, matrix);
+    // m4.multiply(m4.rotationY(Transform.toRadians(this.rotation[1])), matrix, matrix);
+    // m4.multiply(m4.rotationZ(Transform.toRadians(this.rotation[2])), matrix, matrix);
+    // m4.multiply(m4.translation(this.position), matrix, matrix);
 
     return matrix;
   }
