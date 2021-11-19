@@ -1,79 +1,62 @@
-enum EventType {
-    DOWN,
-    UP,
-}
-
 export default class KeyListener {
-    inputs = {
-        moveUp: false,
-        moveDown: false,
-        moveLeft: false,
-        moveRight: false,
+  private inputs = {
+    moveUp: false,
+    moveDown: false,
+    moveLeft: false,
+    moveRight: false,
+  };
+
+  private keyDownHandler: (key: KeyboardEvent) => void;
+
+  startListening(callback: () => void): void {
+    this.keyDownHandler = (key: KeyboardEvent) => {
+      if (this.registerInput(key)) {
+        callback();
+      }
     };
 
-    private keyDownHandler = (key: KeyboardEvent) => {
-        this.keyEventHandler(key, EventType.DOWN);
-    };
+    window.addEventListener('keydown', this.keyDownHandler);
+  }
 
-    private keyUpHandler = (key: KeyboardEvent) => {
-        this.keyEventHandler(key, EventType.UP);
-    };
+  getInputs() {
+    return this.inputs;
+  }
 
-    constructor() {
-        window.addEventListener("keydown", this.keyDownHandler);
-        window.addEventListener("keyup", this.keyUpHandler);
+  clearInputs(): void {
+    Object.keys(this.inputs).forEach((input) => {
+      this.inputs[input] = false;
+    });
+  }
+
+  stopListening(): void {
+    window.removeEventListener('keydown', this.keyDownHandler);
+  }
+
+  private registerInput(key: KeyboardEvent): boolean {
+    let isRelevantInput: boolean = true;
+
+    switch (key.code) {
+      case 'ArrowUp': // fall through
+      case 'KeyW':
+        this.inputs.moveUp = true;
+        break;
+      case 'ArrowDown': // fall through
+      case 'KeyS':
+        this.inputs.moveDown = true;
+        break;
+      case 'ArrowLeft': // fall through
+      case 'KeyA':
+        this.inputs.moveLeft = true;
+        break;
+      case 'ArrowRight': // fall through
+      case 'KeyD':
+        this.inputs.moveRight = true;
+        break;
+      default:
+        isRelevantInput = false;
+        break;
     }
 
-    anyPressed(): boolean {
-        return Object.values(this.inputs).some((pressed) => pressed);
-    }
-
-    clear() {
-        for (const input in this.inputs) {
-            this.inputs[input] = false;
-        }
-    }
-
-    stopListening() {
-        window.removeEventListener("keydown", this.keyDownHandler);
-        window.removeEventListener("keyup", this.keyUpHandler);
-    }
-
-    private keyEventHandler(key: KeyboardEvent, eventType: EventType) {
-        switch (key.code) {
-            case "ArrowUp": // fall through
-            case "KeyW":
-                this.registerInput("moveUp", eventType);
-                break;
-            case "ArrowDown": // fall through
-            case "KeyS":
-                this.registerInput("moveDown", eventType);
-                break;
-            case "ArrowLeft": // fall through
-            case "KeyA":
-                this.registerInput("moveLeft", eventType);
-                break;
-            case "ArrowRight": // fall through
-            case "KeyD":
-                this.registerInput("moveRight", eventType);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private registerInput(input: string, eventType: EventType) {
-        if (input in this.inputs) {
-            switch (eventType) {
-                case EventType.DOWN:
-                    this.inputs[input] = true;
-                    break;
-                case EventType.UP:
-                    this.inputs[input] = false;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
+    return isRelevantInput;
+  }
 }
