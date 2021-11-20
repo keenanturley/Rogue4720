@@ -8,12 +8,12 @@ import Color from './renderer/Color';
 import Game from './game/Game';
 
 const PLACEHOLDER_MAP: string = `
-  |||||
+  |||||  
 |||...|||
 |...@...|
 |||...|||
-  |||||
-`.substring(1);
+  |||||  
+`.slice(1, -1);
 
 (async () => {
   const canvas = document.getElementById('canvas') as HTMLCanvasElement;

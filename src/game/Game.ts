@@ -34,8 +34,8 @@ export default class Game {
     const inputs = this.keyListener.getInputs();
 
     // Attempt to move character
-    const previousR = this.player.row;
-    const previousC = this.player.column;
+    const previousRow = this.player.row;
+    const previousColumn = this.player.column;
 
     if (inputs.moveUp) this.player.row -= 1;
     else if (inputs.moveDown) this.player.row += 1;
@@ -43,8 +43,8 @@ export default class Game {
     else if (inputs.moveRight) this.player.column += 1;
 
     if (this.collision(this.player.row, this.player.column)) {
-      this.player.row = previousR;
-      this.player.column = previousC;
+      this.player.row = previousRow;
+      this.player.column = previousColumn;
     }
 
     // Print map
@@ -115,7 +115,9 @@ export default class Game {
       return;
     }
 
-    // If the string did not contain a player position, find an arbitrary default
+    // If the string did not contain a player starting position,
+    // set the starting position at the first available floor tile found by
+    // searching left-to-right, top-to-bottom (English reading order)
     for (let row = 0; row < this.map.length; row += 1) {
       for (let column = 0; column < this.map[row].length; column += 1) {
         if (this.map[row][column] === Tile.FLOOR) {
