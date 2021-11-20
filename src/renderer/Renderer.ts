@@ -18,6 +18,8 @@ export default class Renderer {
 
   private animationRequestId;
 
+  private fpsConsoleLogId;
+
   preRender: () => void;
 
   frames: number;
@@ -42,7 +44,8 @@ export default class Renderer {
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
-    setInterval(() => {
+    this.frames = 0;
+    this.fpsConsoleLogId = setInterval(() => {
       // eslint-disable-next-line no-console
       console.log(`FPS: ${this.frames}`);
       this.frames = 0;
@@ -104,6 +107,7 @@ export default class Renderer {
   }
 
   stopRendering() {
+    clearInterval(this.fpsConsoleLogId);
     cancelAnimationFrame(this.animationRequestId);
   }
 }

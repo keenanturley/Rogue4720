@@ -5,10 +5,25 @@ import Scene from './renderer/Scene';
 import Model from './renderer/Model';
 import BaseColorMaterial from './renderer/BaseColorMaterial';
 import Color from './renderer/Color';
+import Game from './game/Game';
+
+const PLACEHOLDER_MAP: string = `
+  |||||  
+|||...|||
+|...@...|
+|||...|||
+  |||||  
+`.slice(1, -1);
 
 (async () => {
   const canvas = document.getElementById('canvas') as HTMLCanvasElement;
   const gl = canvas.getContext('webgl2');
+
+  // Generate map
+  const map = PLACEHOLDER_MAP;
+
+  // Create the game logic handler
+  const game = new Game(map);
 
   // Create Shader and Material
   const material = new BaseColorMaterial(Color.fromHex('#302459'));
@@ -43,6 +58,7 @@ import Color from './renderer/Color';
   // During development, stop rendering after the module is refreshed
   // @ts-ignore module.hot is a Parcel construct
   module.hot.dispose(() => {
+    game.stopGame();
     renderer.stopRendering();
   });
 
