@@ -3,7 +3,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import Mesh from './Mesh';
 import MeshNode from './MeshNode';
 import Transform from './Transform';
-import Material from './Material';
+import Material from './materials/Material';
 
 /**
  * Class that holds model data, it is implemented to the professor's

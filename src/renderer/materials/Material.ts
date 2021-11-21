@@ -1,4 +1,4 @@
-import Shader from './Shader';
+import Shader from '../Shader';
 
 /**
  * Base class for a custom Material. Meant to be subclassed to create
