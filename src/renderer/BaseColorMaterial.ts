@@ -18,8 +18,7 @@ export default class BaseColorMaterial extends Material<BaseColorMaterialUniform
 
   constructor(color: Color) {
     super(baseColorShader, { u_color: DEFAULT_U_COLOR });
-    this.color = color;
-    this.setColor(this.color);
+    this.setColor(color);
   }
 
   setColor(color: Color) {
