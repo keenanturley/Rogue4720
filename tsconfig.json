@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es6",
     "module": "esnext",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "outDir": "./dist/",
+    "allowJs": true,
   }
 }

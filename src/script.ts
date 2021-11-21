@@ -8,6 +8,8 @@ import AlbedoMaterial from './renderer/AlbedoMaterial';
 // import Color from './renderer/Color';
 import Texture from './renderer/Texture';
 import Game from './game/Game';
+import DebugPanel from './elements/DebugPanel';
+import './style.css';
 
 const PLACEHOLDER_MAP: string = `
   |||||  
@@ -57,15 +59,22 @@ const PLACEHOLDER_MAP: string = `
   };
   const renderer = new Renderer(gl, scene, camera, preRender);
 
-  // During development, stop rendering after the module is refreshed
-  // @ts-ignore module.hot is a Parcel construct
-  module.hot.dispose(() => {
-    game.stopGame();
-    renderer.stopRendering();
-  });
-
+  // Create DebugPanel
+  const debugPanel = new DebugPanel(renderer);
+  document.body.appendChild(debugPanel.element);
+  
   // Begin rendering
   requestAnimationFrame((time) => {
     renderer.render(time);
   });
+
+
+  if (module.hot) {
+    module.hot.dispose(() => {
+      game.stopGame();
+      renderer.stopRendering();
+    });
+    module.hot.accept();
+  }
+
 })();

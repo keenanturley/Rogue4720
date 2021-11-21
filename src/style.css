@@ -2,10 +2,21 @@ html, body {
     height: 100%;
     margin: 0;
     background-color: black;
+    font-family: monospace;
 }
 
 canvas {
     width: 100%;
     height: 100%;
     display: block;
+}
+
+.debug-panel {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 3px;
+    color: rgb(0, 255, 0);
 }

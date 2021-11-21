@@ -18,11 +18,10 @@ export default class Renderer {
 
   private animationRequestId;
 
-  private fpsConsoleLogId;
-
   preRender: () => void;
 
-  frames: number;
+  // Time in ms the last frame took to render
+  frameTime: number = 0;
 
   constructor(
     gl: WebGL2RenderingContext,
@@ -43,13 +42,6 @@ export default class Renderer {
 
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
-
-    this.frames = 0;
-    this.fpsConsoleLogId = setInterval(() => {
-      // eslint-disable-next-line no-console
-      console.log(`FPS: ${this.frames}`);
-      this.frames = 0;
-    }, 1000);
   }
 
   drawScene(time: number) {
@@ -93,9 +85,9 @@ export default class Renderer {
   }
 
   render(time: number) {
-    this.preRender();
+    const startTime = performance.now();
 
-    this.frames += 1;
+    this.preRender();
 
     resizeCanvasToDisplaySize(this.gl.canvas);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
@@ -103,11 +95,13 @@ export default class Renderer {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     this.drawScene(time);
 
+    const endTime = performance.now();
+    this.frameTime = endTime - startTime;
+
     this.animationRequestId = requestAnimationFrame((newTime: number) => this.render(newTime));
   }
 
   stopRendering() {
-    clearInterval(this.fpsConsoleLogId);
     cancelAnimationFrame(this.animationRequestId);
   }
 }
