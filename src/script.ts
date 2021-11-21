@@ -3,8 +3,8 @@ import PerspectiveCamera from './renderer/PerspectiveCamera';
 import Renderer from './renderer/Renderer';
 import Scene from './renderer/Scene';
 import Model from './renderer/Model';
-// import BaseColorMaterial from './renderer/BaseColorMaterial';
-import AlbedoMaterial from './renderer/AlbedoMaterial';
+// import BaseColorMaterial from './renderer/materials/BaseColorMaterial';
+import AlbedoMaterial from './renderer/materials/AlbedoMaterial';
 // import Color from './renderer/Color';
 import Texture from './renderer/Texture';
 import Game from './game/Game';
@@ -62,12 +62,11 @@ const PLACEHOLDER_MAP: string = `
   // Create DebugPanel
   const debugPanel = new DebugPanel(renderer);
   document.body.appendChild(debugPanel.element);
-  
+
   // Begin rendering
   requestAnimationFrame((time) => {
     renderer.render(time);
   });
-
 
   if (module.hot) {
     module.hot.dispose(() => {
@@ -76,5 +75,4 @@ const PLACEHOLDER_MAP: string = `
     });
     module.hot.accept();
   }
-
 })();

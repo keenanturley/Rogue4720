@@ -1,8 +1,8 @@
 import Material from './Material';
-import Shader from './Shader';
-import albedoVertexShader from '../shaders/albedo.vert';
-import albedoFragmentShader from '../shaders/albedo.frag';
-import Texture from './Texture';
+import Shader from '../Shader';
+import albedoVertexShader from '../../shaders/albedo.vert';
+import albedoFragmentShader from '../../shaders/albedo.frag';
+import Texture from '../Texture';
 
 const albedoShader = new Shader(albedoVertexShader, albedoFragmentShader);
 
