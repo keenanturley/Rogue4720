@@ -3,8 +3,10 @@ import PerspectiveCamera from './renderer/PerspectiveCamera';
 import Renderer from './renderer/Renderer';
 import Scene from './renderer/Scene';
 import Model from './renderer/Model';
-import BaseColorMaterial from './renderer/BaseColorMaterial';
-import Color from './renderer/Color';
+// import BaseColorMaterial from './renderer/BaseColorMaterial';
+import AlbedoMaterial from './renderer/AlbedoMaterial';
+// import Color from './renderer/Color';
+import Texture from './renderer/Texture';
 import Game from './game/Game';
 
 const PLACEHOLDER_MAP: string = `
@@ -26,15 +28,15 @@ const PLACEHOLDER_MAP: string = `
   const game = new Game(map);
 
   // Create Shader and Material
-  const material = new BaseColorMaterial(Color.fromHex('#302459'));
+  const material = new AlbedoMaterial(new Texture(gl, 'https://static.observableusercontent.com/files/0e7b80379c6272e6e0431669f855b19032a3d1e856b7900215569c92218c31a22c0c6906e2ce2c56dcd68608bd566170744724d008d59d8cf04fa3803f318a54'));
 
   // Create Mesh and MeshNode
   // ! Debug test for model loading data
-  const test = await Model.fromURL(
+  const testModel = await Model.fromURL(
     'https://static.observableusercontent.com/files/c1fc0d2fbf2bed5669afae79d4c0e896701b9e7257924c92a873b376bb2e65d7c217aeb899c11088d648cf89535a89089cdabff9da336ba7e6a739dd5e20a5cf',
     material,
   );
-  const meshNodes = test.MeshNodes;
+  const meshNodes = testModel.MeshNodes;
 
   // Create a Scene and insert the MeshNode as the root
   const scene = new Scene();
