@@ -1,9 +1,9 @@
 import { v3 } from 'twgl.js';
 import Material from './Material';
-import Shader from './Shader';
+import Shader from '../Shader';
 import baseColorVertexShader from '../shaders/baseColor.vert';
 import baseColorFragmentShader from '../shaders/baseColor.frag';
-import Color from './Color';
+import Color from '../Color';
 
 const baseColorShader = new Shader(baseColorVertexShader, baseColorFragmentShader);
 
