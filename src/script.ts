@@ -10,6 +10,8 @@ import Texture from './renderer/Texture';
 import Game from './game/Game';
 import DebugPanel from './elements/DebugPanel';
 import './style.css';
+import raymanTexture from '../Assets/Textures/Rayman.png';
+import raymanModel from '../Assets/Models/raymanModel.obj';
 
 const PLACEHOLDER_MAP: string = `
   |||||  
@@ -30,13 +32,10 @@ const PLACEHOLDER_MAP: string = `
   const game = new Game(map);
 
   // Create Shader and Material
-  const material = new AlbedoMaterial(new Texture(gl, new URL('../Assets/Textures/Rayman.png', import.meta.url).toString()));
+  const material = new AlbedoMaterial(new Texture(gl, raymanTexture));
 
   // Create Mesh and MeshNode
-  const testModel = await Model.fromURL(
-    new URL('../Assets/Models/raymanModel.obj', import.meta.url).toString(),
-    material,
-  );
+  const testModel = await Model.fromURL(raymanModel, material);
   const meshNodes = testModel.MeshNodes;
 
   // Create a Scene and insert the MeshNode as the root
