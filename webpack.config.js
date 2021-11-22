@@ -19,6 +19,20 @@ module.exports = {
         test: /\.(frag|vert)$/,
         type: 'asset/source',
       },
+      {
+        test: /\.obj$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'models/[name][ext]'
+        },
+      },
+      {
+        test: /\.png$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'textures/[name][ext]'
+        },
+      },
     ],
   },
   plugins: [
@@ -32,9 +46,23 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].[contenthash].bundle.js',
     path: path.resolve(__dirname, 'dist'),
+    assetModuleFilename: 'assets/[name][ext]',
     clean: true,
+  },
+  optimization: {
+    moduleIds: 'deterministic',
+    runtimeChunk: 'single',
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
+    },
   },
   target: 'web',
 };
