@@ -8,14 +8,29 @@ export default class MeshNode extends SceneNode {
 
   material: Material;
 
+  static numMeshNodes = 0;
+
   constructor(
     transform: Transform = new Transform(),
     mesh: Mesh,
     material: Material,
+    name?: string,
   ) {
-    super(transform);
+    const defaultName = `meshNode#${MeshNode.numMeshNodes}`;
+    let computedName: string;
+    if (name) {
+      computedName = name;
+    } else if (mesh.name) {
+      computedName = `${mesh.name}-${defaultName}`;
+    } else {
+      computedName = defaultName;
+    }
+
+    super(computedName, transform);
 
     this.mesh = mesh;
     this.material = material;
+
+    MeshNode.numMeshNodes += 1;
   }
 }

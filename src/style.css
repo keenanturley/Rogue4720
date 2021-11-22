@@ -2,21 +2,67 @@ html, body {
     height: 100%;
     margin: 0;
     background-color: black;
+    color: white;
     font-family: monospace;
+    font-size: 1rem;
+}
+
+#app {
+    display: flex;
+    /* grid-template-columns: auto 25rem; */
+    height: 100%;
 }
 
 canvas {
+    /* grid-row: 1;
+    grid-column: 1; */
     width: 100%;
     height: 100%;
+}
+
+scene-panel {
+    /* grid-row: 1;
+    grid-column: 2; */
+    flex: 25rem 0 0;
+    max-width: 25rem;
+}
+
+scene-panel-header {
     display: block;
+    text-align: center;
+    border-bottom: 1px solid white;
+    padding: 0.25rem;
+}
+
+scene-panel-list {
+    display: block;
+    margin: 0.5rem;
+    overflow: auto;
+    text-overflow: ellipsis;
+}
+
+scene-panel-list-node { 
+    display: block;
+}
+
+.node-wrapper { 
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: flex;
+}
+
+.expand-button { 
+    width: 1rem;
+    user-select: none;
+    flex-shrink: 0;
 }
 
 .debug-panel {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    background-color: rgba(0, 0, 0, 0.1);
+    bottom: 5px;
+    left: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.3);
     padding: 3px;
     color: rgb(0, 255, 0);
 }

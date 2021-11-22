@@ -6,11 +6,11 @@ import Model from './renderer/Model';
 import AlbedoMaterial from './renderer/materials/AlbedoMaterial';
 import Texture from './renderer/Texture';
 import Game from './game/Game';
-import DebugPanel from './elements/DebugPanel';
 import './style.css';
 import raymanTexture from '../Assets/Textures/Rayman.png';
 import raymanModel from '../Assets/Models/raymanModel.obj';
 import Transform from './renderer/Transform';
+import DebugUI from './renderer/DebugUI';
 
 const PLACEHOLDER_MAP: string = `
   |||||  
@@ -21,6 +21,7 @@ const PLACEHOLDER_MAP: string = `
 `.slice(1, -1);
 
 (async () => {
+  const appWrapper = document.getElementById('app');
   const canvas = document.getElementById('canvas') as HTMLCanvasElement;
   const gl = canvas.getContext('webgl2');
 
@@ -37,12 +38,17 @@ const PLACEHOLDER_MAP: string = `
   const testModel = await Model.fromURL(
     raymanModel,
     material,
+    'rayman',
   );
   const modelNode = testModel.createModelNode(new Transform([0.0, -5.0, -20]));
+  const modelNode2 = testModel.createModelNode(new Transform([10, -5.0, -20]));
+  const modelNode3 = testModel.createModelNode(new Transform([-10, -5.0, -20]));
 
   // Create a Scene and insert the MeshNode as the root
   const scene = new Scene();
   scene.addNode(modelNode);
+  scene.addNode(modelNode2);
+  scene.addNode(modelNode3);
 
   // Create a Camera to view the scene with
   const camera = new PerspectiveCamera();
@@ -57,9 +63,8 @@ const PLACEHOLDER_MAP: string = `
   };
   const renderer = new Renderer(gl, scene, camera, preRender);
 
-  // Create DebugPanel
-  const debugPanel = new DebugPanel(renderer);
-  document.body.appendChild(debugPanel.element);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const debugUI = new DebugUI(renderer, appWrapper);
 
   // Begin rendering
   requestAnimationFrame((time) => {

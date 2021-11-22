@@ -1,27 +1,34 @@
 import Renderer from '../renderer/Renderer';
 
-export default class DebugPanel {
+export default class FrameTimePanel {
   static className = 'debug-panel';
 
   renderer: Renderer;
 
   element: HTMLDivElement;
 
+  frameTimeUpdateIntervalId: ReturnType<typeof setTimeout>;
+
   constructor(renderer: Renderer) {
     this.renderer = renderer;
     this.element = document.createElement('div');
 
-    this.element.className = DebugPanel.className;
+    this.element.className = FrameTimePanel.className;
 
-    const frameTimeUpdate = setInterval(() => {
+    // Update the frame time 30 times per second
+    this.frameTimeUpdateIntervalId = setInterval(() => {
       this.element.innerText = `Frame time: ${this.renderer.frameTime} ms`;
     }, 30 / 1000);
 
     if (module.hot) {
       module.hot.dispose(() => {
-        clearInterval(frameTimeUpdate);
+        clearInterval(this.frameTimeUpdateIntervalId);
         this.element.parentNode.removeChild(this.element);
       });
     }
+  }
+
+  cleanUp() {
+    clearInterval(this.frameTimeUpdateIntervalId);
   }
 }

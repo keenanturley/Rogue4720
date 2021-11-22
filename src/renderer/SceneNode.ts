@@ -6,12 +6,10 @@ import Transform from './Transform';
  * SceneNodes can have children of the same type, which forms the basis of a Scene Graph
  */
 export default class SceneNode {
-  // Possible abstraction: Make Postion, Rotation, and Scale their own classes,
-  // or make our own Vec3 class that has more options so we aren't working with a raw
-  // Float32Array.
-
   // This node's transform is relative to its parent
   localTransform: Transform;
+
+  name: string;
 
   // These are private because they shouldn't be modified by users.
   // Parent is set when adding children to nodes.
@@ -19,16 +17,17 @@ export default class SceneNode {
 
   private children: Set<SceneNode>;
 
-  /**
-     * Creates a new SceneNode with the given transform data
-     * @param position
-     * @param rotation
-     * @param scale
-     */
-  constructor(localTransform: Transform = new Transform()) {
+  // Counter for the number of scene nodes created this session
+  private static sceneNodes: number = 0;
+
+  constructor(name?: string, localTransform: Transform = new Transform()) {
     this.localTransform = localTransform;
 
+    this.name = name ?? `sceneNode#${SceneNode.sceneNodes}`;
+
     this.children = new Set<SceneNode>();
+
+    SceneNode.sceneNodes += 1;
   }
 
   getParent(): SceneNode {

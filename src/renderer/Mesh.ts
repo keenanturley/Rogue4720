@@ -38,16 +38,20 @@ export default class Mesh {
 
   bufferInfo?: BufferInfo;
 
+  name: string;
+
   constructor(
     position: primitives.TypedArray,
     normal?: primitives.TypedArray,
     uv?: primitives.TypedArray,
     indices?: primitives.TypedArray,
+    name?: string,
   ) {
     this.position = position;
     this.normal = normal;
     this.uv = uv;
     this.indices = indices;
+    this.name = name;
   }
 
   createArrays() {
