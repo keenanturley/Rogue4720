@@ -3,15 +3,14 @@ import PerspectiveCamera from './renderer/PerspectiveCamera';
 import Renderer from './renderer/Renderer';
 import Scene from './renderer/Scene';
 import Model from './renderer/Model';
-// import BaseColorMaterial from './renderer/materials/BaseColorMaterial';
 import AlbedoMaterial from './renderer/materials/AlbedoMaterial';
-// import Color from './renderer/Color';
 import Texture from './renderer/Texture';
 import Game from './game/Game';
 import DebugPanel from './elements/DebugPanel';
 import './style.css';
 import raymanTexture from '../Assets/Textures/Rayman.png';
 import raymanModel from '../Assets/Models/raymanModel.obj';
+import Transform from './renderer/Transform';
 
 const PLACEHOLDER_MAP: string = `
   |||||  
@@ -35,12 +34,15 @@ const PLACEHOLDER_MAP: string = `
   const material = new AlbedoMaterial(new Texture(gl, raymanTexture));
 
   // Create Mesh and MeshNode
-  const testModel = await Model.fromURL(raymanModel, material);
-  const meshNodes = testModel.MeshNodes;
+  const testModel = await Model.fromURL(
+    raymanModel,
+    material,
+  );
+  const modelNode = testModel.createModelNode(new Transform([0.0, -5.0, -20]));
 
   // Create a Scene and insert the MeshNode as the root
   const scene = new Scene();
-  meshNodes.forEach((node) => scene.addNode(node));
+  scene.addNode(modelNode);
 
   // Create a Camera to view the scene with
   const camera = new PerspectiveCamera();
@@ -48,12 +50,10 @@ const PLACEHOLDER_MAP: string = `
   // Create the renderer and begin rendering
   const preRender = () => {
     camera.aspect = gl.canvas.width / gl.canvas.height;
-    meshNodes.forEach((meshNode) => {
-      meshNode.localTransform.rotation = twgl.v3.add(
-        meshNode.localTransform.rotation,
-        [1.0, 1.0, 1.0],
-      );
-    });
+    modelNode.localTransform.rotation = twgl.v3.add(
+      modelNode.localTransform.rotation,
+      [1.0, 1.0, 1.0],
+    );
   };
   const renderer = new Renderer(gl, scene, camera, preRender);
 
