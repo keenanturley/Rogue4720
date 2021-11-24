@@ -12,11 +12,12 @@ import raymanModel from '../Assets/Models/raymanModel.obj';
 import Transform from './renderer/Transform';
 import DebugUI from './renderer/DebugUI';
 
+// Added 'S' for sword item - David
 const PLACEHOLDER_MAP: string = `
   |||||  
 |||...|||
 |...@...|
-|||...|||
+|||i..|||
   |||||  
 `.slice(1, -1);
 

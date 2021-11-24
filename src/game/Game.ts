@@ -1,9 +1,11 @@
+import Inventory from './Inventory';
 import KeyListener from './KeyListener';
 
 enum Tile {
   FLOOR,
   WALL,
   UNDEFINED,
+  ITEM,
 }
 
 interface PlayerObject {
@@ -13,6 +15,8 @@ interface PlayerObject {
 
 export default class Game {
   map: Tile[][];
+
+  inventory: Inventory;
 
   player: PlayerObject;
 
@@ -24,6 +28,8 @@ export default class Game {
     // Run step() when the KeyListener detects input
     this.keyListener = new KeyListener();
     this.keyListener.startListening(() => this.step());
+
+    this.inventory = new Inventory();
 
     // Print map when game starts
     // eslint-disable-next-line no-console
@@ -47,9 +53,16 @@ export default class Game {
       this.player.column = previousColumn;
     }
 
+    if (this.item(this.player.row, this.player.column)) {
+      // Empty for time being, need map to render specific item types
+      this.inventory.pickUpItem('');
+    }
+
     // Print map
     // eslint-disable-next-line no-console
     console.log(this.textRender());
+    // Print Inventory
+    console.log(this.inventory.getInv());
 
     this.keyListener.clearInputs();
   }
@@ -60,6 +73,8 @@ export default class Game {
       switch (tile) {
         case Tile.FLOOR:
           return '.';
+        case Tile.ITEM:
+          return 'i';
         case Tile.WALL:
           return '|';
         default:
@@ -98,6 +113,8 @@ export default class Game {
       switch (character) {
         case '.':
           return Tile.FLOOR;
+        case 'i':
+          return Tile.ITEM;
         case '-': // fall through
         case '|':
           return Tile.WALL;
@@ -136,6 +153,13 @@ export default class Game {
 
     // Wall collision
     if (this.map[row][column] === Tile.WALL) return true;
+
+    return false;
+  }
+
+  private item(row: number, column: number): boolean {
+    // Item on spot
+    if (this.map[row][column] === Tile.ITEM) return true;
 
     return false;
   }

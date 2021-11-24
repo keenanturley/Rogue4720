@@ -4,6 +4,7 @@ export default class KeyListener {
     moveDown: false,
     moveLeft: false,
     moveRight: false,
+    showInv: false,
   };
 
   private keyDownHandler: (key: KeyboardEvent) => void;
@@ -52,6 +53,8 @@ export default class KeyListener {
       case 'KeyD':
         this.inputs.moveRight = true;
         break;
+      case 'KeyE':
+        this.inputs.showInv = true;
       default:
         isRelevantInput = false;
         break;
