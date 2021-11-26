@@ -4,11 +4,15 @@ import Renderer from './renderer/Renderer';
 import Scene from './renderer/Scene';
 import Model from './renderer/Model';
 import AlbedoMaterial from './renderer/materials/AlbedoMaterial';
+import PBRMaterial from './renderer/materials/PBRMaterial';
 import Texture from './renderer/Texture';
 import Game from './game/Game';
 import './style.css';
 import raymanTexture from '../Assets/Textures/Rayman.png';
 import raymanModel from '../Assets/Models/raymanModel.obj';
+import metalAlbedo from '../Assets/Textures/rusted_metal_albedo.png';
+import metalNormal from '../Assets/Textures/veins_normal.png';
+import metalMrao from '../Assets/Textures/rusted_metal_mrao.png';
 import Transform from './renderer/Transform';
 import DebugUI from './renderer/DebugUI';
 
@@ -32,7 +36,7 @@ const PLACEHOLDER_MAP: string = `
   const game = new Game(map);
 
   // Create Shader and Material
-  const material = new AlbedoMaterial(new Texture(gl, raymanTexture));
+  const material = new PBRMaterial(new Texture(gl, metalAlbedo), new Texture(gl, metalNormal), new Texture(gl, metalMrao));
 
   // Create Mesh and MeshNode
   const testModel = await Model.fromURL(
