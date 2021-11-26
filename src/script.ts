@@ -6,20 +6,12 @@ import Model from './renderer/Model';
 import AlbedoMaterial from './renderer/materials/AlbedoMaterial';
 import Texture from './renderer/Texture';
 import Game from './game/Game';
+import Map from './game/Map';
 import './style.css';
 import raymanTexture from '../Assets/Textures/Rayman.png';
 import raymanModel from '../Assets/Models/raymanModel.obj';
 import Transform from './renderer/Transform';
 import DebugUI from './renderer/DebugUI';
-
-// Added 'S' for sword item - David
-const PLACEHOLDER_MAP: string = `
-  |||||  
-|||...|||
-|...@...|
-|||i..|||
-  |||||  
-`.slice(1, -1);
 
 (async () => {
   const appWrapper = document.getElementById('app');
@@ -27,7 +19,7 @@ const PLACEHOLDER_MAP: string = `
   const gl = canvas.getContext('webgl2');
 
   // Generate map
-  const map = PLACEHOLDER_MAP;
+  const map = new Map();
 
   // Create the game logic handler
   const game = new Game(map);

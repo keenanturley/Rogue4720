@@ -1,65 +1,43 @@
+type VoidFunction = () => void;
+
 export default class KeyListener {
-  private inputs = {
-    moveUp: false,
-    moveDown: false,
-    moveLeft: false,
-    moveRight: false,
-    showInv: false,
-  };
+  private callbacks: Map<string, VoidFunction>;
 
   private keyDownHandler: (key: KeyboardEvent) => void;
 
-  startListening(callback: () => void): void {
-    this.keyDownHandler = (key: KeyboardEvent) => {
-      if (this.registerInput(key)) {
-        callback();
+  constructor() {
+    this.callbacks = new Map<string, VoidFunction>();
+
+    this.keyDownHandler = (keyEvent: KeyboardEvent) => {
+      if (this.callbacks.has(keyEvent.key)) {
+        this.callbacks.get(keyEvent.key)();
+      } else if (this.callbacks.has(keyEvent.code)) {
+        this.callbacks.get(keyEvent.code)();
       }
     };
-
-    window.addEventListener('keydown', this.keyDownHandler);
   }
 
-  getInputs() {
-    return this.inputs;
+  addListener(keys: string | string[], callback: VoidFunction): void {
+    if (Array.isArray(keys)) {
+      keys.forEach((key) => {
+        this.callbacks.set(key, callback);
+      });
+    } else {
+      this.callbacks.set(keys, callback);
+    }
   }
 
-  clearInputs(): void {
-    Object.keys(this.inputs).forEach((input) => {
-      this.inputs[input] = false;
+  addListeners(listeners: Array<[string | string[], VoidFunction]>): void {
+    listeners.forEach(([keys, callback]) => {
+      this.addListener(keys, callback);
     });
+  }
+
+  startListening(): void {
+    window.addEventListener('keydown', this.keyDownHandler);
   }
 
   stopListening(): void {
     window.removeEventListener('keydown', this.keyDownHandler);
-  }
-
-  private registerInput(key: KeyboardEvent): boolean {
-    let isRelevantInput: boolean = true;
-
-    switch (key.code) {
-      case 'ArrowUp': // fall through
-      case 'KeyW':
-        this.inputs.moveUp = true;
-        break;
-      case 'ArrowDown': // fall through
-      case 'KeyS':
-        this.inputs.moveDown = true;
-        break;
-      case 'ArrowLeft': // fall through
-      case 'KeyA':
-        this.inputs.moveLeft = true;
-        break;
-      case 'ArrowRight': // fall through
-      case 'KeyD':
-        this.inputs.moveRight = true;
-        break;
-      case 'KeyE':
-        this.inputs.showInv = true;
-      default:
-        isRelevantInput = false;
-        break;
-    }
-
-    return isRelevantInput;
   }
 }
