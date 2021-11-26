@@ -36,7 +36,7 @@ const PLACEHOLDER_MAP: string = `
   const game = new Game(map);
 
   // Create Shader and Material
-  const material = new PBRMaterial(new Texture(gl, metalAlbedo), new Texture(gl, metalNormal), new Texture(gl, metalMrao));
+  const material = new PBRMaterial(new Texture(gl, raymanTexture), new Texture(gl, metalNormal), new Texture(gl, metalMrao));
 
   // Create Mesh and MeshNode
   const testModel = await Model.fromURL(
