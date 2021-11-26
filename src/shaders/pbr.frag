@@ -106,7 +106,7 @@ void main() {
 	vec3 Lo = (kD * albedo / PI + specular) * radiance * max(dot(N, L), 0.0);
 
 	// now calculate final color;
-	vec3 ambient = vec3(0.1) * albedo * ao;
+	vec3 ambient = vec3(0.3) * albedo * ao;
 	vec3 color = ambient + Lo;
 
     outColor = vec4(color, 1);
