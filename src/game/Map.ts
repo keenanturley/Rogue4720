@@ -31,10 +31,12 @@ export default class Map {
     this.createMapFromString(PLACEHOLDER_MAP);
   }
 
-  query({ x, y }: Position): { tile: Tile, entity: Entity, collision: boolean } | null {
+  query({ x, y }: Position): { tile: Tile, entity: Entity, collision: boolean } {
     // Out of bounds
-    if (y < 0 || y >= this.tiles.length) return null;
-    if (x < 0 || x >= this.tiles[y].length) return null;
+    if ((y < 0 || y >= this.tiles.length)
+        || (x < 0 || x >= this.tiles[y].length)) {
+      return { tile: null, entity: null, collision: true };
+    }
 
     // Query tile
     const tile: Tile = this.tiles[y][x];
