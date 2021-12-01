@@ -30,4 +30,14 @@ export default class Player extends Entity {
       this.equippedWeapon = weapon;
     }
   }
+
+  stringRepresentation(): string {
+    let string = `HP: ${this.health}, SP: ${this.skill}`;
+
+    if (this.equippedWeapon) {
+      string += `(+${this.equippedWeapon.skillBonus})`;
+    }
+
+    return string;
+  }
 }
