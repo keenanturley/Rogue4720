@@ -1,10 +1,18 @@
 import { Group, Mesh as THREEMesh } from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import * as Path from 'path';
 import Mesh from './Mesh';
 import MeshNode from './MeshNode';
 import Transform from './Transform';
-import Material from './materials/Material';
+import { Material } from './materials/_MaterialInternal';
 import ModelNode from './ModelNode';
+
+type ResourceSchema = {
+  type: 'Model';
+  model: string; // Path to model (ex. 'assets/Rayman/rayman.obj')
+  material: string; // Path to material config (ex. 'assets/Rayman/material.ts')
+  name?: string; // Optional name for this model
+};
 
 /**
  * Class that holds model data.
@@ -22,15 +30,17 @@ import ModelNode from './ModelNode';
  * TODO: Support more than just OBJ models (probably GLTF / GLB first)
  */
 export default class Model {
+  static cache = new Map<string, Model>();
+
+  static numModels = 0;
+
   readonly meshes: Array<Mesh>;
 
   readonly material: Material;
 
   name: string;
 
-  static numModels = 0;
-
-  constructor(model_path: string, meshes: Array<Mesh>, material: Material, name?: string) {
+  constructor(meshes: Array<Mesh>, material: Material, name?: string) {
     this.meshes = meshes;
     this.material = material;
 
@@ -78,6 +88,30 @@ export default class Model {
     const loadedModel = await loader.loadAsync(model_url);
     const meshNodes = Model.createMeshArray(loadedModel);
 
-    return new Model(model_url, meshNodes, material, name);
+    return new Model(meshNodes, material, name);
+  }
+
+  static async load(url: string): Promise<Model> {
+    if (this.cache.has(url)) {
+      return this.cache.get(url);
+    }
+    const configRequest = await fetch(url);
+    const modelConfig = (await configRequest.json()) as ResourceSchema;
+
+    const dir = Path.dirname(url);
+
+    // Load the model file
+    const modelUrl = Path.resolve(dir, modelConfig.model);
+    const loader = new OBJLoader();
+    const loadedModel = await loader.loadAsync(modelUrl);
+    const meshes = Model.createMeshArray(loadedModel);
+
+    // Load the material
+    const materialUrl = Path.resolve(dir, modelConfig.material);
+    const material = await Material.load(materialUrl);
+
+    const model = new Model(meshes, material, modelConfig.name);
+    this.cache.set(url, model);
+    return model;
   }
 }

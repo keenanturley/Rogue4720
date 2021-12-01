@@ -1,0 +1,6 @@
+{
+  "type": "Shader",
+  "vertexShader": "example.vert",
+  "fragmentShader": "example.frag"
+}
+

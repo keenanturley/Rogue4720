@@ -3,12 +3,8 @@ import PerspectiveCamera from './renderer/PerspectiveCamera';
 import Renderer from './renderer/Renderer';
 import Scene from './renderer/Scene';
 import Model from './renderer/Model';
-import AlbedoMaterial from './renderer/materials/AlbedoMaterial';
-import Texture from './renderer/Texture';
 import Game from './game/Game';
 import './style.css';
-import raymanTexture from '../Assets/Textures/Rayman.png';
-import raymanModel from '../Assets/Models/raymanModel.obj';
 import Transform from './renderer/Transform';
 import DebugUI from './renderer/DebugUI';
 
@@ -31,18 +27,11 @@ const PLACEHOLDER_MAP: string = `
   // Create the game logic handler
   const game = new Game(map);
 
-  // Create Shader and Material
-  const material = new AlbedoMaterial(new Texture(gl, raymanTexture));
+  const raymanModel = await Model.load('/assets/Rayman/model.json');
 
-  // Create Mesh and MeshNode
-  const testModel = await Model.fromURL(
-    raymanModel,
-    material,
-    'rayman',
-  );
-  const modelNode = testModel.createModelNode(new Transform([0.0, -5.0, -20]));
-  const modelNode2 = testModel.createModelNode(new Transform([10, -5.0, -20]));
-  const modelNode3 = testModel.createModelNode(new Transform([-10, -5.0, -20]));
+  const modelNode = raymanModel.createModelNode(new Transform([0.0, -5.0, -20]));
+  const modelNode2 = raymanModel.createModelNode(new Transform([10, -5.0, -20]));
+  const modelNode3 = raymanModel.createModelNode(new Transform([-10, -5.0, -20]));
 
   // Create a Scene and insert the MeshNode as the root
   const scene = new Scene();

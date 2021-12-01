@@ -1,6 +1,15 @@
 import { createProgramInfo, ProgramInfo } from 'twgl.js';
+import * as Path from 'path';
+
+type ResourceSchema = {
+  type: 'Shader';
+  vertexShader: string;
+  fragmentShader: string;
+};
 
 export default class Shader {
+  static cache = new Map<string, Shader>();
+
   vertexShader: string;
 
   fragmentShader: string;
@@ -46,5 +55,24 @@ export default class Shader {
       this.programInfo = createProgramInfo(gl, [this.vertexShader, this.fragmentShader]);
     }
     return this.programInfo;
+  }
+
+  static async load(url: string): Promise<Shader> {
+    if (this.cache.has(url)) {
+      return this.cache.get(url);
+    }
+
+    const configRequest = await fetch(url);
+    const config = (await configRequest.json()) as ResourceSchema;
+
+    const dir = Path.dirname(url);
+
+    const vertexShaderPath = Path.resolve(dir, config.vertexShader);
+    const fragmentShaderPath = Path.resolve(dir, config.fragmentShader);
+
+    const shader = await Shader.fromURLs(vertexShaderPath, fragmentShaderPath);
+
+    this.cache.set(url, shader);
+    return shader;
   }
 }

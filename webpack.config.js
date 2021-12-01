@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -15,24 +16,6 @@ module.exports = {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
       },
-      {
-        test: /\.(frag|vert)$/,
-        type: 'asset/source',
-      },
-      {
-        test: /\.obj$/,
-        type: 'asset/resource',
-        generator: {
-          filename: 'models/[name][ext]'
-        },
-      },
-      {
-        test: /\.png$/,
-        type: 'asset/resource',
-        generator: {
-          filename: 'textures/[name][ext]'
-        },
-      },
     ],
   },
   plugins: [
@@ -40,10 +23,21 @@ module.exports = {
       template: './src/index.html',
       title: 'Rogue4720',
     }),
+    new CopyPlugin({
+      patterns: [
+        { from: './src/assets', to: 'assets' }
+      ]
+    }),
   ],
   devtool: 'inline-source-map',
+  experiments: {
+    topLevelAwait: true,
+  },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
+    fallback: {
+      path: require.resolve('path-browserify')
+    },
   },
   output: {
     filename: '[name].[contenthash].bundle.js',

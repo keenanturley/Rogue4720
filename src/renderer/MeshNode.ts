@@ -1,4 +1,4 @@
-import Material from './materials/Material';
+import { Material } from './materials/_MaterialInternal';
 import Mesh from './Mesh';
 import SceneNode from './SceneNode';
 import Transform from './Transform';

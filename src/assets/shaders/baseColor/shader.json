@@ -1,0 +1,6 @@
+{
+  "type": "Shader",
+  "vertexShader": "baseColor.vert",
+  "fragmentShader": "baseColor.frag"
+}
+
