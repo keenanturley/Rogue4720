@@ -38,6 +38,9 @@ export default class Game {
       // Open/close inventory with 'i'
       ['i', () => this.toggleInventory()],
 
+      // Attack Enemy
+      ['q', () => this.attack()],
+
       // Select inventory weapon/item with '1'-'9'
       [
         ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
@@ -118,6 +121,64 @@ export default class Game {
     }
 
     // Print map when inventory is toggled
+    this.printGame();
+  }
+
+  private attack() : void {
+    const range = [0, -1, -1, 0, 0, 1, 1, 0];
+    let inRange = false;
+    let enemy;
+
+    for (let i = 0; i < range.length; i++) {
+      const checkPosition: Position = {
+        x: this.player.position.x + range[i],
+        y: this.player.position.y + range[++i],
+      };
+
+      const {entity} = this.map.query(checkPosition);
+
+      if (entity !== null && entity.character === Enemy.character) {
+        inRange = true;
+        enemy = entity;
+        break;
+      }
+    }
+
+    if (!inRange) {
+      this.message += 'No Enemies in Range';
+    } else if (this.player.equippedWeapon === null) {
+      this.message += 'No Weapon Equipped';
+    } else {
+      const target = <Enemy> enemy;
+
+      // Player attack
+      let rand = (Math.random() + 0.1) * 5;
+      let SP = this.player.skill + rand + this.player.equippedWeapon.skillBonus;
+
+      if (SP > target.skill) {
+        target.health -= this.player.equippedWeapon.damage;
+        this.message += `${target.name} took ${this.player.equippedWeapon.damage} damage. ${target.health} health remaining.\n`;
+        
+        if (target.health <= 0) {
+           this.message += `${target.name} has been defeated\n`;
+           this.player.skill++;
+           this.map.removeEntity(target);
+           this.printGame();
+           return;
+        }
+      } else {
+        this.message += 'Attack Missed. No damage dealt\n';
+      }
+
+      rand = Math.random();
+      let enemySP = target.skill + rand;
+      if (enemySP > SP) {
+        this.player.health -= target.damage;
+        this.message += `${target.name} deals ${target.damage} damage \n`;
+      } else {
+        this.message += `${target.name} misses. No damage dealt\n`;
+      }
+    }
     this.printGame();
   }
 
