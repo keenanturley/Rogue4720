@@ -1,166 +1,176 @@
-import Inventory from './Inventory';
 import KeyListener from './KeyListener';
+import Map from './Map';
+import Player from './entities/Player';
+import Enemy from './entities/Enemy';
+import Position from './Position';
+import Weapon from './entities/Weapon';
 
-enum Tile {
-  FLOOR,
-  WALL,
-  UNDEFINED,
-  ITEM,
-}
-
-interface PlayerObject {
-  row: number;
-  column: number;
+enum State {
+  WALKING,
+  INVENTORY,
 }
 
 export default class Game {
-  map: Tile[][];
+  map: Map;
 
-  inventory: Inventory;
+  private player: Player;
 
-  player: PlayerObject;
+  private state: State;
 
   private keyListener: KeyListener;
 
-  constructor(map: string) {
-    this.loadMapFromString(map);
+  private message: string;
 
-    // Run step() when the KeyListener detects input
+  constructor(map: Map) {
+    this.map = map;
+    this.player = this.map.player;
+
+    this.state = State.WALKING;
+
     this.keyListener = new KeyListener();
-    this.keyListener.startListening(() => this.step());
+    this.keyListener.addListeners([
+      // Move player with 'w', 'a', 's', 'd'
+      ['w', () => this.movePlayer([0, -1])],
+      ['a', () => this.movePlayer([-1, 0])],
+      ['s', () => this.movePlayer([0, 1])],
+      ['d', () => this.movePlayer([1, 0])],
 
-    this.inventory = new Inventory();
+      // Open/close inventory with 'i'
+      ['i', () => this.toggleInventory()],
+
+      // Select inventory weapon/item with '1'-'9'
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
+        ({ key }: KeyboardEvent) => this.selectFromInventory(Number(key) - 1),
+      ],
+    ]);
+    this.keyListener.startListening();
 
     // Print map when game starts
-    // eslint-disable-next-line no-console
-    console.log(this.textRender());
-  }
-
-  step(): void {
-    const inputs = this.keyListener.getInputs();
-
-    // Attempt to move character
-    const previousRow = this.player.row;
-    const previousColumn = this.player.column;
-
-    if (inputs.moveUp) this.player.row -= 1;
-    else if (inputs.moveDown) this.player.row += 1;
-    else if (inputs.moveLeft) this.player.column -= 1;
-    else if (inputs.moveRight) this.player.column += 1;
-
-    if (this.collision(this.player.row, this.player.column)) {
-      this.player.row = previousRow;
-      this.player.column = previousColumn;
-    }
-
-    if (this.item(this.player.row, this.player.column)) {
-      // Empty for time being, need map to render specific item types
-      this.inventory.pickUpItem('');
-    }
-
-    // Print map
-    // eslint-disable-next-line no-console
-    console.log(this.textRender());
-    // Print Inventory
-    console.log(this.inventory.getInv());
-
-    this.keyListener.clearInputs();
-  }
-
-  textRender(): string {
-    // "Render" floors and walls
-    const textArray: string[][] = this.map.map((tileRow: Tile[]) => tileRow.map((tile: Tile) => {
-      switch (tile) {
-        case Tile.FLOOR:
-          return '.';
-        case Tile.ITEM:
-          return 'i';
-        case Tile.WALL:
-          return '|';
-        default:
-          return ' ';
-      }
-    }));
-
-    // "Render" player
-    textArray[this.player.row][this.player.column] = '@';
-
-    let text = '';
-    textArray.forEach((row: string[]) => {
-      row.forEach((char: string) => {
-        text += char;
-      });
-      text += '\n';
-    });
-
-    return text;
+    this.message = 'Game Start';
+    this.printGame();
   }
 
   stopGame(): void {
     this.keyListener.stopListening();
   }
 
-  private loadMapFromString(string: string): void {
-    this.player = {
-      row: undefined,
-      column: undefined,
+  private movePlayer([deltaX, deltaY]: [number, number]): void {
+    if (this.state !== State.WALKING) return;
+
+    const newPosition: Position = {
+      x: this.player.position.x + deltaX,
+      y: this.player.position.y + deltaY,
     };
 
-    let playerStartingPositionFound: boolean = false;
+    const { entity, collision } = this.map.query(newPosition);
 
-    // Extract tile and player data from string
-    this.map = string.split('\n').map((stringRow: string, rowIndex: number) => stringRow.split('').map((character: string, columnIndex: number) => {
-      switch (character) {
-        case '.':
-          return Tile.FLOOR;
-        case 'i':
-          return Tile.ITEM;
-        case '-': // fall through
-        case '|':
-          return Tile.WALL;
-        case '@':
-          this.player.row = rowIndex;
-          this.player.column = columnIndex;
-          playerStartingPositionFound = true;
-          return Tile.FLOOR;
+    // Check for entities
+    if (entity) {
+      switch (entity.character) {
+        case Enemy.character: {
+          // Bump into enemy
+          const enemy = <Enemy> entity;
+
+          if (Game.isVowel(enemy.name.charAt(0))) {
+            this.message += `"You bump into an ${enemy.name}"\n`;
+          } else {
+            this.message += `"You bump into a ${enemy.name}"\n`;
+          }
+          break;
+        }
+        case Weapon.character: {
+          // Pick up weapon
+          const weapon = <Weapon> entity;
+
+          this.player.pickUpWeapon(weapon);
+          this.map.removeEntity(weapon);
+
+          if (Game.isVowel(weapon.name.charAt(0))) {
+            this.message += `"You pick up an ${weapon.name}"\n`;
+          } else {
+            this.message += `"You pick up a ${weapon.name}"\n`;
+          }
+        }
+          break;
         default:
-          return Tile.UNDEFINED;
+          break;
       }
-    }));
+    }
 
-    if (playerStartingPositionFound) {
+    // Check for collision
+    if (!collision) {
+      this.map.moveEntity(this.player, newPosition);
+    }
+
+    // Print map when player tries to move
+    this.printGame();
+  }
+
+  private toggleInventory(): void {
+    if (this.state === State.INVENTORY) {
+      // Close inventory
+      this.state = State.WALKING;
+    } else {
+      // Open inventory
+      this.message += '"You look at your inventory"\n';
+      this.state = State.INVENTORY;
+    }
+
+    // Print map when inventory is toggled
+    this.printGame();
+  }
+
+  private selectFromInventory(index: number): void {
+    if (this.state !== State.INVENTORY) return;
+    if (index >= this.player.inventory.weapons.length) return;
+
+    const weapon = this.player.inventory.weapons[index];
+
+    if (this.player.equippedWeapon === weapon) {
+      this.message += `"You already have this ${weapon.name} equipped"\n`;
+      this.printGame();
       return;
     }
 
-    // If the string did not contain a player starting position,
-    // set the starting position at the first available floor tile found by
-    // searching left-to-right, top-to-bottom (English reading order)
-    for (let row = 0; row < this.map.length; row += 1) {
-      for (let column = 0; column < this.map[row].length; column += 1) {
-        if (this.map[row][column] === Tile.FLOOR) {
-          this.player.row = row;
-          this.player.column = column;
-          return;
-        }
-      }
+    this.player.equippedWeapon = weapon;
+
+    if (Game.isVowel(weapon.name.charAt(0))) {
+      this.message += `"You equip an ${weapon.name}"\n`;
+    } else {
+      this.message += `"You equip a ${weapon.name}"\n`;
     }
+
+    this.printGame();
   }
 
-  private collision(row: number, column: number): boolean {
-    // Out of bounds collision
-    if (row < 0 || row >= this.map.length) return true;
-    if (column < 0 || column >= this.map[row].length) return true;
+  private printGame(): void {
+    /* eslint-disable no-console */
+    // Print map
+    console.log(this.map.stringRepresentation());
 
-    // Wall collision
-    if (this.map[row][column] === Tile.WALL) return true;
+    // Print player information
+    console.log(`HP: ${this.player.health}, SP: ${this.player.skill}`);
 
-    return false;
+    if (this.player.equippedWeapon) {
+      // Print player equpped weapon
+      console.log('Equipped weapon:', this.player.equippedWeapon.stringRepresentation());
+    }
+
+    if (this.message !== '') {
+      // Print and reset message string
+      console.log(this.message);
+      this.message = '';
+    }
+
+    if (this.state === State.INVENTORY) {
+      // Print player inventory weapons
+      console.log(this.player.inventory.stringRepresentation());
+    }
+    /* eslint-enable no-console */
   }
 
-  private item(row: number, column: number): boolean {
-    // Item on spot
-    if (this.map[row][column] === Tile.ITEM) return true;
-
-    return false;
+  private static isVowel(character: string): boolean {
+    return 'aeiou'.split('').includes(character.toLowerCase());
   }
 }
