@@ -8,11 +8,13 @@ import Weapon from './entities/Weapon';
 import Position from './Position';
 
 const PLACEHOLDER_GRID: string = `
-  |||||  
-|||..e|||
-|.w.@..w|
-|||w..|||
-  |||||  
+  ||||||||||||||||||          
+ |w....e.w....e.....|   ||||| 
+|w.@..||||.||||||..e||||.....|
+ |...|   |e|w.w.w..........e.|
+  |w|    |.||||||..e||||.....|
+   |     |w..e......|   ||||| 
+          ||||||||||          
 `.slice(1, -1);
 
 export default class Grid {
