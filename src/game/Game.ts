@@ -1,8 +1,7 @@
 import KeyListener from './KeyListener';
-import Map from './Map';
+import Grid from './Grid';
 import Player from './entities/Player';
 import Enemy from './entities/Enemy';
-import Position from './Position';
 import Weapon from './entities/Weapon';
 
 enum State {
@@ -11,7 +10,7 @@ enum State {
 }
 
 export default class Game {
-  map: Map;
+  grid: Grid;
 
   private player: Player;
 
@@ -21,9 +20,9 @@ export default class Game {
 
   private message: string;
 
-  constructor(map: Map) {
-    this.map = map;
-    this.player = this.map.player;
+  constructor(grid: Grid) {
+    this.grid = grid;
+    this.player = this.grid.getPlayer();
 
     this.state = State.WALKING;
 
@@ -49,8 +48,9 @@ export default class Game {
     ]);
     this.keyListener.startListening();
 
-    // Print map when game starts
-    this.message = 'Game Start';
+    this.message = '';
+
+    this.addMessage('Game Start');
     this.printGame();
   }
 
@@ -61,41 +61,35 @@ export default class Game {
   private movePlayer([deltaX, deltaY]: [number, number]): void {
     if (this.state !== State.WALKING) return;
 
-    const newPosition: Position = {
-      x: this.player.position.x + deltaX,
-      y: this.player.position.y + deltaY,
+    const { x: currentX, y: currentY } = this.grid.getPositionOf(this.player);
+    const newPosition = {
+      x: currentX + deltaX,
+      y: currentY + deltaY,
     };
 
-    const { entity, collision } = this.map.query(newPosition);
+    const { entity, collision } = this.grid.query(newPosition);
 
     // Check for entities
     if (entity) {
-      switch (entity.character) {
-        case Enemy.character: {
-          // Bump into enemy
+      switch (entity.constructor) {
+        case Enemy: {
           const enemy = <Enemy> entity;
 
-          if (Game.isVowel(enemy.name.charAt(0))) {
-            this.message += `"You bump into an ${enemy.name}"\n`;
-          } else {
-            this.message += `"You bump into a ${enemy.name}"\n`;
-          }
+          this.addMessage(`You bump into ${Game.nounPhrase(enemy)}`);
+
           break;
         }
-        case Weapon.character: {
-          // Pick up weapon
+
+        case Weapon: {
           const weapon = <Weapon> entity;
 
           this.player.pickUpWeapon(weapon);
-          this.map.removeEntity(weapon);
+          this.grid.removeEntity(weapon);
+          this.addMessage(`You pick up ${Game.nounPhrase(weapon)}`);
 
-          if (Game.isVowel(weapon.name.charAt(0))) {
-            this.message += `"You pick up an ${weapon.name}"\n`;
-          } else {
-            this.message += `"You pick up a ${weapon.name}"\n`;
-          }
-        }
           break;
+        }
+
         default:
           break;
       }
@@ -103,10 +97,66 @@ export default class Game {
 
     // Check for collision
     if (!collision) {
-      this.map.moveEntity(this.player, newPosition);
+      this.grid.moveEntity(this.player, newPosition);
     }
 
-    // Print map when player tries to move
+    this.printGame();
+  }
+
+  private attack() : void {
+    const range = [0, -1, -1, 0, 0, 1, 1, 0];
+    let inRange = false;
+    let enemy: Enemy;
+
+    for (let i = 0; i < range.length; i += 1) {
+      const checkPosition = {
+        x: this.grid.getPositionOf(this.player).x + range[i],
+        y: this.grid.getPositionOf(this.player).y + range[(i += 1)],
+      };
+
+      const entity = this.grid.getEntityAt(checkPosition);
+
+      if (entity && entity instanceof Enemy) {
+        inRange = true;
+        enemy = <Enemy> entity;
+        break;
+      }
+    }
+
+    if (!inRange) {
+      this.addMessage('No Enemies in Range');
+    } else if (!this.player.equippedWeapon) {
+      this.addMessage('No Weapon Equipped');
+    } else {
+      // Player attack
+      let rand = (Math.random() + 0.1) * 5;
+      const SP = this.player.skill + rand + this.player.equippedWeapon.skillBonus;
+
+      if (SP > enemy.skill) {
+        enemy.health -= this.player.equippedWeapon.damage;
+        this.addMessage(`${enemy.name} took ${this.player.equippedWeapon.damage} damage. ${enemy.health} health remaining`);
+
+        if (enemy.health <= 0) {
+          this.addMessage(`${enemy.name} has been defeated`);
+          this.player.skill += 1;
+          this.grid.removeEntity(enemy);
+          this.printGame();
+          return;
+        }
+      } else {
+        this.message += 'Attack Missed. No damage dealt\n';
+      }
+
+      // Enemy attack
+      rand = Math.random();
+      const enemySP = enemy.skill + rand;
+      if (enemySP > SP) {
+        this.player.health -= enemy.damage;
+        this.addMessage(`${enemy.name} deals ${enemy.damage} damage`);
+      } else {
+        this.addMessage(`${enemy.name} misses. No damage dealt`);
+      }
+    }
     this.printGame();
   }
 
@@ -116,69 +166,10 @@ export default class Game {
       this.state = State.WALKING;
     } else {
       // Open inventory
-      this.message += '"You look at your inventory"\n';
+      this.addMessage('You look at your inventory');
       this.state = State.INVENTORY;
     }
 
-    // Print map when inventory is toggled
-    this.printGame();
-  }
-
-  private attack() : void {
-    const range = [0, -1, -1, 0, 0, 1, 1, 0];
-    let inRange = false;
-    let enemy;
-
-    for (let i = 0; i < range.length; i++) {
-      const checkPosition: Position = {
-        x: this.player.position.x + range[i],
-        y: this.player.position.y + range[++i],
-      };
-
-      const {entity} = this.map.query(checkPosition);
-
-      if (entity !== null && entity.character === Enemy.character) {
-        inRange = true;
-        enemy = entity;
-        break;
-      }
-    }
-
-    if (!inRange) {
-      this.message += 'No Enemies in Range';
-    } else if (this.player.equippedWeapon === null) {
-      this.message += 'No Weapon Equipped';
-    } else {
-      const target = <Enemy> enemy;
-
-      // Player attack
-      let rand = (Math.random() + 0.1) * 5;
-      let SP = this.player.skill + rand + this.player.equippedWeapon.skillBonus;
-
-      if (SP > target.skill) {
-        target.health -= this.player.equippedWeapon.damage;
-        this.message += `${target.name} took ${this.player.equippedWeapon.damage} damage. ${target.health} health remaining.\n`;
-        
-        if (target.health <= 0) {
-           this.message += `${target.name} has been defeated\n`;
-           this.player.skill++;
-           this.map.removeEntity(target);
-           this.printGame();
-           return;
-        }
-      } else {
-        this.message += 'Attack Missed. No damage dealt\n';
-      }
-
-      rand = Math.random();
-      let enemySP = target.skill + rand;
-      if (enemySP > SP) {
-        this.player.health -= target.damage;
-        this.message += `${target.name} deals ${target.damage} damage \n`;
-      } else {
-        this.message += `${target.name} misses. No damage dealt\n`;
-      }
-    }
     this.printGame();
   }
 
@@ -189,49 +180,54 @@ export default class Game {
     const weapon = this.player.inventory.weapons[index];
 
     if (this.player.equippedWeapon === weapon) {
-      this.message += `"You already have this ${weapon.name} equipped"\n`;
+      this.addMessage(`You already have this ${weapon.name} equipped`);
       this.printGame();
       return;
     }
 
     this.player.equippedWeapon = weapon;
-
-    if (Game.isVowel(weapon.name.charAt(0))) {
-      this.message += `"You equip an ${weapon.name}"\n`;
-    } else {
-      this.message += `"You equip a ${weapon.name}"\n`;
-    }
-
+    this.addMessage(`You equip ${Game.nounPhrase(weapon)}`);
     this.printGame();
+  }
+
+  private addMessage(message: string): void {
+    this.message += `"${message}"\n`;
   }
 
   private printGame(): void {
     /* eslint-disable no-console */
-    // Print map
-    console.log(this.map.stringRepresentation());
+    // Grid
+    console.log(this.grid.stringRepresentation());
 
-    // Print player information
-    console.log(`HP: ${this.player.health}, SP: ${this.player.skill}`);
+    // Player stats
+    console.log(this.player.stringRepresentation());
 
     if (this.player.equippedWeapon) {
-      // Print player equpped weapon
+      // Equpped weapon
       console.log('Equipped weapon:', this.player.equippedWeapon.stringRepresentation());
     }
 
-    if (this.message !== '') {
-      // Print and reset message string
+    if (this.message) {
+      // Message
       console.log(this.message);
       this.message = '';
     }
 
     if (this.state === State.INVENTORY) {
-      // Print player inventory weapons
+      // Inventory
       console.log(this.player.inventory.stringRepresentation());
     }
     /* eslint-enable no-console */
   }
 
+  private static nounPhrase<Type extends { name: string }>(object: Type): string {
+    if (Game.isVowel(object.name.charAt(0))) {
+      return `an ${object.name}`;
+    }
+    return `a ${object.name}`;
+  }
+
   private static isVowel(character: string): boolean {
-    return 'aeiou'.split('').includes(character.toLowerCase());
+    return 'aeiou'.split('').includes(character.charAt(0).toLowerCase());
   }
 }

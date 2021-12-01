@@ -4,7 +4,7 @@ import Renderer from './renderer/Renderer';
 import Scene from './renderer/Scene';
 import Model from './renderer/Model';
 import Game from './game/Game';
-import Map from './game/Map';
+import Grid from './game/Grid';
 import './style.css';
 import Transform from './renderer/Transform';
 import DebugUI from './renderer/DebugUI';
@@ -14,11 +14,11 @@ import DebugUI from './renderer/DebugUI';
   const canvas = document.getElementById('canvas') as HTMLCanvasElement;
   const gl = canvas.getContext('webgl2');
 
-  // Generate map
-  const map = new Map();
+  // Generate grid
+  const grid = new Grid();
 
   // Create the game logic handler
-  const game = new Game(map);
+  const game = new Game(grid);
 
   const raymanModel = await Model.load('/assets/Rayman/model.json');
 
