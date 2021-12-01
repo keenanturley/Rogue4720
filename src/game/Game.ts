@@ -75,7 +75,7 @@ export default class Game {
         case Enemy: {
           const enemy = <Enemy> entity;
 
-          this.addMessage(`You bump into ${Game.nounPhrase(enemy)}`);
+          this.addMessage(`You bump into ${Game.nounPhrase(enemy)} ${enemy.stringRepresentation()}`);
 
           break;
         }
@@ -104,59 +104,75 @@ export default class Game {
   }
 
   private attack() : void {
+    if (this.state !== State.WALKING) return;
+
+    // Search for an enemy withing the nearest four tiles
     const range = [0, -1, -1, 0, 0, 1, 1, 0];
-    let inRange = false;
     let enemy: Enemy;
 
-    for (let i = 0; i < range.length; i += 1) {
+    const { x: playerX, y: playerY } = this.grid.getPositionOf(this.player);
+
+    for (let i = 0; i < range.length; i += 2) {
       const checkPosition = {
-        x: this.grid.getPositionOf(this.player).x + range[i],
-        y: this.grid.getPositionOf(this.player).y + range[(i += 1)],
+        x: playerX + range[i],
+        y: playerY + range[i + 1],
       };
 
       const entity = this.grid.getEntityAt(checkPosition);
 
       if (entity && entity instanceof Enemy) {
-        inRange = true;
         enemy = <Enemy> entity;
         break;
       }
     }
 
-    if (!inRange) {
+    if (!enemy) {
       this.addMessage('No Enemies in Range');
-    } else if (!this.player.equippedWeapon) {
-      this.addMessage('No Weapon Equipped');
-    } else {
-      // Player attack
-      let rand = (Math.random() + 0.1) * 5;
-      const SP = this.player.skill + rand + this.player.equippedWeapon.skillBonus;
-
-      if (SP > enemy.skill) {
-        enemy.health -= this.player.equippedWeapon.damage;
-        this.addMessage(`${enemy.name} took ${this.player.equippedWeapon.damage} damage. ${enemy.health} health remaining`);
-
-        if (enemy.health <= 0) {
-          this.addMessage(`${enemy.name} has been defeated`);
-          this.player.skill += 1;
-          this.grid.removeEntity(enemy);
-          this.printGame();
-          return;
-        }
-      } else {
-        this.message += 'Attack Missed. No damage dealt\n';
-      }
-
-      // Enemy attack
-      rand = Math.random();
-      const enemySP = enemy.skill + rand;
-      if (enemySP > SP) {
-        this.player.health -= enemy.damage;
-        this.addMessage(`${enemy.name} deals ${enemy.damage} damage`);
-      } else {
-        this.addMessage(`${enemy.name} misses. No damage dealt`);
-      }
+      this.printGame();
+      return;
     }
+
+    if (!this.player.equippedWeapon) {
+      this.addMessage('No Weapon Equipped');
+      this.printGame();
+      return;
+    }
+
+    // Player attack
+    let rand = 1 + Math.floor((Math.random() * 5));
+    const SP = this.player.skill + rand + this.player.equippedWeapon.skillBonus;
+
+    if (SP > enemy.skill) {
+      // Attack hit
+      enemy.health -= this.player.equippedWeapon.damage;
+      this.addMessage(`${enemy.name} took ${this.player.equippedWeapon.damage} damage. ${enemy.name} has ${enemy.health} health remaining`);
+
+      if (enemy.health <= 0) {
+        // Enemy defeated
+        this.player.skill += 1;
+        this.grid.removeEntity(enemy);
+        this.addMessage(`${enemy.name} has been defeated`);
+        this.printGame();
+        return;
+      }
+    } else {
+      // Attack miss
+      this.addMessage('Attack Missed. No damage dealt');
+    }
+
+    // Enemy attack
+    rand = 1 + Math.floor((Math.random() * 5));
+    const enemySP = enemy.skill + rand;
+
+    if (enemySP > SP) {
+      // Attack hit
+      this.player.health -= enemy.damage;
+      this.addMessage(`${enemy.name} deals ${enemy.damage} damage`);
+    } else {
+      // Arrack miss
+      this.addMessage(`${enemy.name} misses. No damage dealt`);
+    }
+
     this.printGame();
   }
 

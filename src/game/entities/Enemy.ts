@@ -31,6 +31,10 @@ export default class Enemy extends Entity {
     this.damage = enemies.get(name)?.damage ?? 0;
   }
 
+  stringRepresentation(): string {
+    return `(HP: ${this.health}, SP: ${this.skill}, damage: ${this.damage})`;
+  }
+
   private static randomEnemyName(): string {
     const names = Array.from(enemies.keys());
     return names[Math.floor(Math.random() * names.length)];

@@ -35,7 +35,7 @@ export default class Player extends Entity {
     let string = `HP: ${this.health}, SP: ${this.skill}`;
 
     if (this.equippedWeapon) {
-      string += `(+${this.equippedWeapon.skillBonus})`;
+      string += `(${this.equippedWeapon.skillBonus >= 0 ? '+' : ''}${this.equippedWeapon.skillBonus})`;
     }
 
     return string;
