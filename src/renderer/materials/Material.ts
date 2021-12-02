@@ -4,7 +4,8 @@ import Shader from '../Shader';
 export type MaterialType =
   'Material'
   | 'AlbedoMaterial'
-  | 'BaseColorMaterial';
+  | 'BaseColorMaterial'
+  | 'PBRMaterial';
 
 type LoaderFunction = (url:string, config: object) => Promise<Material>;
 

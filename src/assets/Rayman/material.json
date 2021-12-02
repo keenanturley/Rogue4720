@@ -1,4 +1,20 @@
 {
-  "type": "AlbedoMaterial",
-  "texture": "Rayman.png"
+  "type": "PBRMaterial",
+  "albedo": "rusted_metal_albedo.png",
+  "normal": "rusted_metal_normal.png",
+  "mrao": "rusted_metal_mrao.png",
+  "pLightsPos": [
+    -10.0, 10.0, 10.0,
+    10.0, 10.0, 10.0,
+    -10.0, -10.0, 10.0,
+    10.0, -10.0, 10.0
+  ],
+  "pLightsCols": [
+    300.0, 300.0, 300.0,
+    300.0, 300.0, 300.0,
+    300.0, 300.0, 300.0,
+    300.0, 300.0, 300.0
+  ],
+  "dLightCol": [100, 50, 20],
+  "dLightDir": [-300.0, 35.0, 10]
 }

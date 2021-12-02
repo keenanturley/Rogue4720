@@ -1,7 +1,6 @@
 import {
   drawBufferInfo, m4, resizeCanvasToDisplaySize, setBuffersAndAttributes, setUniforms,
 } from 'twgl.js';
-import Camera from './Camera';
 import MeshNode from './MeshNode';
 import PerspectiveCamera from './PerspectiveCamera';
 import Scene from './Scene';
@@ -12,7 +11,7 @@ export default class Renderer {
 
   scene: Scene;
 
-  camera: Camera;
+  camera: PerspectiveCamera;
 
   rendererUniforms: object;
 
@@ -26,7 +25,7 @@ export default class Renderer {
   constructor(
     gl: WebGL2RenderingContext,
     scene: Scene = new Scene(),
-    camera: Camera = new PerspectiveCamera(),
+    camera: PerspectiveCamera = new PerspectiveCamera(),
     preRender: () => void = () => {},
   ) {
     this.gl = gl;
@@ -73,8 +72,15 @@ export default class Renderer {
       setUniforms(programInfo, this.rendererUniforms);
 
       // Compute matrix
+      const cameraMatrix = this.camera.getViewProjectionMatrix();
       const projectedMatrix = m4.multiply(this.camera.getViewProjectionMatrix(), matrix);
-      setUniforms(programInfo, { u_matrix: projectedMatrix });
+      const eyePosition = m4.inverse(this.camera.getViewMatrix()).slice(12, 15);
+      setUniforms(programInfo, {
+        u_matrix: projectedMatrix,
+        u_modelMatrix: matrix,
+        u_eyePosition: eyePosition,
+        u_cameraMatrix: cameraMatrix,
+      });
 
       // Render
       drawBufferInfo(this.gl, bufferInfo);

@@ -4,3 +4,4 @@
 export * from './Material';
 export * from './AlbedoMaterial';
 export * from './BaseColorMaterial';
+export * from './PBRMaterial';

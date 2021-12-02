@@ -2,10 +2,11 @@ import * as twgl from 'twgl.js';
 import PerspectiveCamera from './renderer/PerspectiveCamera';
 import Renderer from './renderer/Renderer';
 import Scene from './renderer/Scene';
-import Model from './renderer/Model';
 import Game from './game/Game';
+import Model from './renderer/Model';
 import Grid from './game/Grid';
 import './style.css';
+
 import Transform from './renderer/Transform';
 import DebugUI from './renderer/DebugUI';
 
@@ -14,13 +15,13 @@ import DebugUI from './renderer/DebugUI';
   const canvas = document.getElementById('canvas') as HTMLCanvasElement;
   const gl = canvas.getContext('webgl2');
 
+  const raymanModel = await Model.load('/assets/Rayman/model.json');
+
   // Generate grid
   const grid = new Grid();
 
   // Create the game logic handler
   const game = new Game(grid);
-
-  const raymanModel = await Model.load('/assets/Rayman/model.json');
 
   const modelNode = raymanModel.createModelNode(new Transform([0.0, -5.0, -20]));
   const modelNode2 = raymanModel.createModelNode(new Transform([10, -5.0, -20]));
