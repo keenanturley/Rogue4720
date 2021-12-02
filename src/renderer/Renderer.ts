@@ -1,7 +1,6 @@
 import {
   drawBufferInfo, m4, resizeCanvasToDisplaySize, setBuffersAndAttributes, setUniforms,
 } from 'twgl.js';
-import Camera from './Camera';
 import MeshNode from './MeshNode';
 import PerspectiveCamera from './PerspectiveCamera';
 import Scene from './Scene';
@@ -73,14 +72,14 @@ export default class Renderer {
       setUniforms(programInfo, this.rendererUniforms);
 
       // Compute matrix
-	  const cameraMatrix = this.camera.getViewProjectionMatrix();
+      const cameraMatrix = this.camera.getViewProjectionMatrix();
       const projectedMatrix = m4.multiply(this.camera.getViewProjectionMatrix(), matrix);
       const eyePosition = m4.inverse(this.camera.getViewMatrix()).slice(12, 15);
       setUniforms(programInfo, {
-	  	u_matrix: projectedMatrix,
-		u_modelMatrix: matrix,
-		u_eyePosition: eyePosition,
-		u_cameraMatrix: cameraMatrix
+        u_matrix: projectedMatrix,
+        u_modelMatrix: matrix,
+        u_eyePosition: eyePosition,
+        u_cameraMatrix: cameraMatrix,
       });
 
       // Render
