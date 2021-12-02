@@ -17,12 +17,6 @@ import DebugUI from './renderer/DebugUI';
 
   const raymanModel = await Model.load('/assets/Rayman/model.json');
 
-  // Generate grid
-  const grid = new Grid();
-
-  // Create the game logic handler
-  const game = new Game(grid);
-
   const modelNode = raymanModel.createModelNode(new Transform([0.0, -5.0, -20]));
   const modelNode2 = raymanModel.createModelNode(new Transform([10, -5.0, -20]));
   const modelNode3 = raymanModel.createModelNode(new Transform([-10, -5.0, -20]));
@@ -32,6 +26,12 @@ import DebugUI from './renderer/DebugUI';
   scene.addNode(modelNode);
   scene.addNode(modelNode2);
   scene.addNode(modelNode3);
+
+  // Generate grid
+  const grid = new Grid(scene);
+
+  // Create the game logic handler
+  const game = new Game(grid);
 
   // Create a Camera to view the scene with
   const camera = new PerspectiveCamera();

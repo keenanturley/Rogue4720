@@ -1,4 +1,4 @@
-import Tile from './tiles/Tile';
+import { Tile } from './tiles/Tile';
 import FloorTile from './tiles/FloorTile';
 import WallTile from './tiles/WallTile';
 import Entity from './entities/Entity';
@@ -7,6 +7,9 @@ import Enemy from './entities/Enemy';
 import Weapon from './entities/Weapon';
 import Item from './entities/Item';
 import Position from './Position';
+import SceneNode from '../renderer/SceneNode';
+import Scene from '../renderer/Scene';
+import Transform from '../renderer/Transform';
 
 const PLACEHOLDER_GRID: string = `
 ||||||||||||||||||||||||||||||||||||||||||||
@@ -70,7 +73,11 @@ export default class Grid {
 
   private positionLookup: Map<Entity, Position>;
 
-  constructor() {
+  private sceneNode: SceneNode;
+
+  constructor(scene: Scene) {
+    this.sceneNode = new SceneNode('Grid');
+    scene.addNode(this.sceneNode);
     this.entities = {
       enemies: new Set<Enemy>(),
       weapons: new Set<Weapon>(),
@@ -80,6 +87,22 @@ export default class Grid {
     this.entityLookup = [];
     this.positionLookup = new Map<Entity, Position>();
     this.loadGridFromString(PLACEHOLDER_GRID);
+    this.buildDungeon();
+  }
+
+  // Should only be called once after the map has been set
+  buildDungeon(): void {
+    // TODO: use model extents, normalize models to be the same size, and use
+    // that for the tileSize
+    const tileSize = 10;
+    // TODO: remove after having movable camera
+    const zFactor = -1;
+    this.tiles.forEach((row, y) => {
+      row.forEach((tile, x) => {
+        this.sceneNode.addChild(tile.modelNode);
+        tile.setTransform(new Transform([x * tileSize, 0, y * tileSize * zFactor]));
+      });
+    });
   }
 
   getTiles(): Tile[][] { return this.tiles; }
@@ -194,7 +217,7 @@ export default class Grid {
           return new FloorTile();
 
         default:
-          return new Tile(' ', true);
+          return new FloorTile();
       }
     }));
   }

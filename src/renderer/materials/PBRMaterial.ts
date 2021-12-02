@@ -5,6 +5,7 @@ import {
 } from './_MaterialInternal';
 import Shader from '../Shader';
 import Texture from '../Texture';
+import SceneLightingSchema from '../SceneLightingSchema';
 
 const PBRShader = await Shader.load('/assets/shaders/pbr/shader.json');
 
@@ -13,10 +14,7 @@ interface ResourceSchema extends BaseMaterialResourceSchema {
   albedo: string;
   normal: string;
   mrao: string;
-  dLightDir: number[];
-  dLightCol: number[];
-  pLightsPos: number[];
-  pLightsCols: number[];
+  sceneLighting: string;
 }
 
 interface PBRMaterialUniforms {
@@ -94,14 +92,16 @@ export default class PBRMaterial extends Material<PBRMaterialUniforms> {
     const mraoUrl = Path.resolve(dir, config.mrao);
     const mrao = await Texture.load(mraoUrl);
 
-    const pLightsPos = config.pLightsPos;
-    const pLightsCols = config.pLightsCols;
-    const dLightDir = config.dLightDir;
-    const dLightCol = config.dLightCol;
+    const sceneLightingPath = '/assets/lighting.json';
+    const configRequest = await fetch(sceneLightingPath);
+    const sceneLightingConfig = (await configRequest.json()) as SceneLightingSchema;
+    const {
+      pLightPositions, pLightColors, dLightDirection, dLightColor,
+    } = sceneLightingConfig;
 
     return new PBRMaterial(
       albedo, normal, mrao,
-      pLightsPos, pLightsCols, dLightDir, dLightCol
+      pLightPositions, pLightColors, dLightDirection, dLightColor,
     );
   }
 }
