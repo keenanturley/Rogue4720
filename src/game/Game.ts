@@ -3,6 +3,7 @@ import Grid from './Grid';
 import Player from './entities/Player';
 import Enemy from './entities/Enemy';
 import Weapon from './entities/Weapon';
+import Item from './entities/Item';
 
 enum State {
   WALKING,
@@ -86,10 +87,17 @@ export default class Game {
           this.player.pickUpWeapon(weapon);
           this.grid.removeEntity(weapon);
           this.addMessage(`You pick up ${Game.nounPhrase(weapon)}`);
-
           break;
         }
+        case Item: {
+          // Pick up item
+          const item = <Item> entity;
 
+          this.player.pickUpItem(item);
+          this.grid.removeEntity(item);
+          this.addMessage(`You pick up ${Game.nounPhrase(item)}`);
+          break;
+        }
         default:
           break;
       }
@@ -100,6 +108,7 @@ export default class Game {
       this.grid.moveEntity(this.player, newPosition);
     }
 
+    this.postTurn();
     this.printGame();
   }
 
@@ -138,6 +147,8 @@ export default class Game {
       return;
     }
 
+    enemy.combatTimer = 7;
+
     // Player attack
     let rand = 1 + Math.floor((Math.random() * 5));
     const SP = this.player.skill + rand + this.player.equippedWeapon.skillBonus;
@@ -168,11 +179,19 @@ export default class Game {
       // Attack hit
       this.player.health -= enemy.damage;
       this.addMessage(`${enemy.name} deals ${enemy.damage} damage`);
+
+      if (this.player.health <= 0) {
+        this.addMessage('You Died.\nGame Over.');
+        this.printGame();
+        this.stopGame();
+        return;
+      }
     } else {
       // Arrack miss
       this.addMessage(`${enemy.name} misses. No damage dealt`);
     }
 
+    this.postTurn();
     this.printGame();
   }
 
@@ -191,23 +210,62 @@ export default class Game {
 
   private selectFromInventory(index: number): void {
     if (this.state !== State.INVENTORY) return;
-    if (index >= this.player.inventory.weapons.length) return;
+    // if (index >= this.player.inventory.weapons.length) return;
+    if (index >= this.player.inventory.inventory.length) return;
 
-    const weapon = this.player.inventory.weapons[index];
+    // const weapon = this.player.inventory.weapons[index];
+    const inventoryObj = this.player.inventory.inventory[index];
 
-    if (this.player.equippedWeapon === weapon) {
-      this.addMessage(`You already have this ${weapon.name} equipped`);
-      this.printGame();
-      return;
+    if (inventoryObj instanceof Weapon) {
+      const weapon = <Weapon> inventoryObj;
+
+      if (this.player.equippedWeapon === weapon) {
+        this.message += `"You already have this ${weapon.name} equipped"\n`;
+        this.printGame();
+        return;
+      }
+
+      this.player.equippedWeapon = weapon;
+
+      this.addMessage(`You equip ${Game.nounPhrase(weapon)}`);
+
+    } else if (inventoryObj instanceof Item) {
+      const item = <Item> inventoryObj;
+
+      this.player.health += item.effectHP;
+      this.player.skill += item.effectSP;
+      this.player.useUpItem(item);
+
+      this.message += `Use Item: ${item.name} : ${item.description}`;
     }
 
-    this.player.equippedWeapon = weapon;
-    this.addMessage(`You equip ${Game.nounPhrase(weapon)}`);
+    this.postTurn();
     this.printGame();
   }
 
   private addMessage(message: string): void {
     this.message += `"${message}"\n`;
+  }
+
+  private postTurn(): void {
+    this.grid.getEntities().enemies.forEach((enemy) => {
+      enemy.combatTimer--;
+      if (enemy.combatTimer > 0) return;
+      const { x: currentX, y: currentY } = this.grid.getPositionOf(enemy);
+      const range = [0, -1, -1, 0, 0, 1, 1, 0];
+      const randPos = Math.floor(Math.random() * 4) * 2;
+
+      const newPosition = {
+        x: currentX + range[randPos],
+        y: currentY + range[randPos + 1],
+      };
+  
+      const { entity, collision } = this.grid.query(newPosition);
+
+      if (entity || collision) return;
+
+      this.grid.moveEntity(enemy, newPosition);
+    })
   }
 
   private printGame(): void {

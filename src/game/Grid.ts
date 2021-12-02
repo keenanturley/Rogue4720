@@ -5,16 +5,46 @@ import Entity from './entities/Entity';
 import Player from './entities/Player';
 import Enemy from './entities/Enemy';
 import Weapon from './entities/Weapon';
+import Item from './entities/Item';
 import Position from './Position';
 
 const PLACEHOLDER_GRID: string = `
-  ||||||||||||||||||          
- |w....e.w....e.....|   ||||| 
-|w.@..||||.||||||..e||||.....|
- |...|   |e|w.w.w..........e.|
-  |w|    |.||||||..e||||.....|
-   |     |w..e......|   ||||| 
-          ||||||||||          
+||||||||||||||||||||||||||||||||||||
+||||||||||||||||||||||||||....||||||
+||||||||||||||||||||||||......||||||
+|||||||||||||||...w..e..|.....||||||
+||||||||....|||.........|.....||||||
+||||||||....|||.........|.....||||||
+||||||||................|.....||||||
+||||||||....|||......@..|.....||||||
+||||||||....|||.||||||.||.....||||||
+||||||||....|||.|......||.....||||||
+||||||||..e.|||.|.|||||||...e.||||||
+||||||||w...|||.|.|||||||.e...||||||
+||||||||...e|||.|.|||||||.....||||||
+||||||||||.||||.|.|||||||.....||||||
+||||||||||.||||.|.e.....|.....||||||
+|||||......||||.|.......|..|||||||||
+|.e...w...|||||.|.....w....|||||||||
+|.e.......|||||.|.......|......|||||
+|.......i.......|.....e.|.||.....e||
+|.........|||||.|....w..|.||..e.e.||
+|||||||.|||||||.|.......|.||......||
+|||||||.|||||||.||.||||||.||......||
+|||||||.|||||||.||.||||||.||......||
+|||||||.|||||||.||....|||.||......||
+|||||||....||||.|.....|||.||......||
+||||||||||.||||.|.....|||.|||||||.||
+||||||||||.||||.|...e.|||.|.......||
+||||||||||.||||.|.........|.||||||||
+||||||||||.||||.|....e||||.....e.|||
+|||...........|.|....w||||.......|||
+|||...e.......|.|....e||||..e....|||
+|||......i......|.w...||||e......|||
+|||...........|||.....||||.......|||
+|||..e........||||||||||||.....e.|||
+||||||||||||||||||||||||||||||||||||
+||||||||||||||||||||||||||||||||||||
 `.slice(1, -1);
 
 export default class Grid {
@@ -25,6 +55,7 @@ export default class Grid {
   private entities: {
     enemies: Set<Enemy>,
     weapons: Set<Weapon>,
+    items: Set<Item>,
   };
 
   private entityLookup: Entity[][];
@@ -35,6 +66,7 @@ export default class Grid {
     this.entities = {
       enemies: new Set<Enemy>(),
       weapons: new Set<Weapon>(),
+      items: new Set<Item>(),
     };
 
     this.entityLookup = [];
@@ -149,6 +181,10 @@ export default class Grid {
           this.addEntity(new Weapon(), { x, y });
           return new FloorTile();
 
+        case Item.character:
+          this.addEntity(new Item(), { x, y });
+          return new FloorTile();
+
         default:
           return new Tile(' ', true);
       }
@@ -165,6 +201,9 @@ export default class Grid {
         break;
       case Weapon:
         callback(<Weapon> entity, this.entities.weapons);
+        break;
+      case Item:
+        callback(<Item> entity, this.entities.items);
         break;
       default:
         break;

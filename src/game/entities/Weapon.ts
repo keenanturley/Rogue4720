@@ -17,7 +17,7 @@ export default class Weapon extends Entity {
 
   static isCollidable: boolean = false;
 
-  name: string;
+  // name: string;
 
   damage: number;
 

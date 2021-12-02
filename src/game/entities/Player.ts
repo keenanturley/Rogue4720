@@ -1,5 +1,6 @@
 import Entity from './Entity';
 import Weapon from './Weapon';
+import Item from './Item';
 import Inventory from '../Inventory';
 
 export default class Player extends Entity {
@@ -14,6 +15,7 @@ export default class Player extends Entity {
   inventory: Inventory;
 
   equippedWeapon: Weapon;
+  // equippedWeapon: Entity;
 
   constructor() {
     super(Player.character, Player.isCollidable);
@@ -24,7 +26,8 @@ export default class Player extends Entity {
   }
 
   pickUpWeapon(weapon: Weapon) {
-    this.inventory.weapons.push(weapon);
+    // this.inventory.weapons.push(weapon);
+    this.inventory.inventory.push(weapon);
 
     if (!this.equippedWeapon) {
       this.equippedWeapon = weapon;
@@ -39,5 +42,14 @@ export default class Player extends Entity {
     }
 
     return string;
+  }
+
+  pickUpItem(item: Item) {
+    this.inventory.inventory.push(item);
+  }
+
+  useUpItem(item: Item) {
+    const index = this.inventory.inventory.indexOf(item);
+    this.inventory.inventory.splice(index, 1);
   }
 }

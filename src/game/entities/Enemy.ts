@@ -14,13 +14,15 @@ export default class Enemy extends Entity {
 
   static isCollidable: boolean = true;
 
-  name: string;
+  // name: string;
 
   health: number;
 
   skill: number;
 
   damage: number;
+
+  combatTimer: number;
 
   constructor(name: string = Enemy.randomEnemyName()) {
     super(Enemy.character, Enemy.isCollidable);
@@ -29,6 +31,7 @@ export default class Enemy extends Entity {
     this.health = enemies.get(name)?.health ?? 1;
     this.skill = enemies.get(name)?.skill ?? 0;
     this.damage = enemies.get(name)?.damage ?? 0;
+    this.combatTimer = 0;
   }
 
   stringRepresentation(): string {
