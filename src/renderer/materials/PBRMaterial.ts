@@ -1,4 +1,5 @@
 import * as Path from 'path';
+// eslint-disable-next-line import/no-cycle
 import {
   Material, BaseMaterialResourceSchema, materialLoaderMap, MaterialType,
 } from './_MaterialInternal';
