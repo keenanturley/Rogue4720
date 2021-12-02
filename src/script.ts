@@ -34,7 +34,9 @@ import DebugUI from './renderer/DebugUI';
   const game = new Game(grid);
 
   // Create a Camera to view the scene with
-  const camera = new PerspectiveCamera();
+  const camera = new PerspectiveCamera(
+    new Transform([-5, -10, -5], [20, 40, 0]),
+  );
 
   // Create the renderer and begin rendering
   const preRender = () => {

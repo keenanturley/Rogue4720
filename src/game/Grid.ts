@@ -94,7 +94,7 @@ export default class Grid {
   buildDungeon(): void {
     // TODO: use model extents, normalize models to be the same size, and use
     // that for the tileSize
-    const tileSize = 10;
+    const tileSize = 1.0;
     // TODO: remove after having movable camera
     const zFactor = -1;
     this.tiles.forEach((row, y) => {
