@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "Rayman.png",
+  "normal": "rusted_metal_normal.png",
+  "mrao": "rusted_metal_mrao.png"
+}

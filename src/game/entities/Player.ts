@@ -2,6 +2,9 @@ import Entity from './Entity';
 import Weapon from './Weapon';
 import Item from './Item';
 import Inventory from '../Inventory';
+import Model from '../../renderer/Model';
+
+const model = await Model.load('/assets/Player/model.json');
 
 export default class Player extends Entity {
   static character: string = '@';
@@ -18,7 +21,7 @@ export default class Player extends Entity {
   // equippedWeapon: Entity;
 
   constructor() {
-    super(Player.character, Player.isCollidable);
+    super(model, Player.character, Player.isCollidable);
     this.health = 20;
     this.skill = 0;
     this.inventory = new Inventory();

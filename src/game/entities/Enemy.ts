@@ -1,12 +1,32 @@
+import Model from '../../renderer/Model';
 import Entity from './Entity';
 
+const genericModel = await Model.load('/assets/GenericEnemy/model.json');
+
+interface EnemyProperties {
+  health: number;
+  skill: number;
+  damage: number;
+  model: Model;
+}
+
 /* eslint quote-props: ["error", "consistent"] */
-const enemies = new Map<string, { health: number, skill: number, damage: number }>([
-  ['Maggot', { health: 4, skill: 0, damage: 4 }],
-  ['Slime Mold', { health: 7, skill: 1, damage: 3 }],
-  ['Goblin', { health: 9, skill: 4, damage: 5 }],
-  ['Ork', { health: 11, skill: 2, damage: 7 }],
-  ['Vampire', { health: 20, skill: 9, damage: 10 }],
+const enemies = new Map<string, EnemyProperties>([
+  ['Maggot', {
+    health: 4, skill: 0, damage: 4, model: genericModel,
+  }],
+  ['Slime Mold', {
+    health: 7, skill: 1, damage: 3, model: genericModel,
+  }],
+  ['Goblin', {
+    health: 9, skill: 4, damage: 5, model: genericModel,
+  }],
+  ['Ork', {
+    health: 11, skill: 2, damage: 7, model: genericModel,
+  }],
+  ['Vampire', {
+    health: 20, skill: 9, damage: 10, model: genericModel,
+  }],
 ]);
 
 export default class Enemy extends Entity {
@@ -25,7 +45,7 @@ export default class Enemy extends Entity {
   combatTimer: number;
 
   constructor(name: string = Enemy.randomEnemyName()) {
-    super(Enemy.character, Enemy.isCollidable);
+    super(enemies.get(name).model, Enemy.character, Enemy.isCollidable);
 
     this.name = name;
     this.health = enemies.get(name)?.health ?? 1;

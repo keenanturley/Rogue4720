@@ -59,6 +59,10 @@ export default class Game {
     this.keyListener.stopListening();
   }
 
+  // update(handler?: Function): void {
+  //   if (handler) handler();
+  // }
+  //
   private movePlayer([deltaX, deltaY]: [number, number]): void {
     if (this.state !== State.WALKING) return;
 
@@ -235,7 +239,6 @@ export default class Game {
       this.player.equippedWeapon = weapon;
 
       this.addMessage(`You equip ${Game.nounPhrase(weapon)}`);
-
     } else if (inventoryObj instanceof Item) {
       const item = <Item> inventoryObj;
 
@@ -256,7 +259,7 @@ export default class Game {
 
   private postTurn(): void {
     this.grid.getEntities().enemies.forEach((enemy) => {
-      enemy.combatTimer--;
+      enemy.combatTimer -= 1;
       if (enemy.combatTimer > 0) return;
       const { x: currentX, y: currentY } = this.grid.getPositionOf(enemy);
       const range = [0, -1, -1, 0, 0, 1, 1, 0];
@@ -266,13 +269,13 @@ export default class Game {
         x: currentX + range[randPos],
         y: currentY + range[randPos + 1],
       };
-  
+
       const { entity, collision } = this.grid.query(newPosition);
 
       if (entity || collision) return;
 
       this.grid.moveEntity(enemy, newPosition);
-    })
+    });
   }
 
   private printGame(): void {

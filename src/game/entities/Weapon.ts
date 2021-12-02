@@ -1,15 +1,24 @@
+import Model from '../../renderer/Model';
 import Entity from './Entity';
 
+const genericModel = await Model.load('/assets/GenericWeapon/model.json');
+
+interface WeaponProperties {
+  damage: number;
+  skillBonus: number;
+  model: Model;
+}
+
 /* eslint quote-props: ["error", "consistent"] */
-const weapons = new Map<string, { damage: number, skillBonus: number }>([
-  ['Dagger', { damage: 3, skillBonus: 0 }],
-  ['Cast Iron Pan', { damage: 7, skillBonus: 1 }],
-  ['War Hammer', { damage: 12, skillBonus: -1 }],
-  ['Hatchet', { damage: 3, skillBonus: 4 }],
-  ['Battleaxe', { damage: 10, skillBonus: 2 }],
-  ['Sword', { damage: 7, skillBonus: 3 }],
-  ['Baton', { damage: 2, skillBonus: 7 }],
-  ['Battle Staff', { damage: 6, skillBonus: 3 }],
+const weapons = new Map<string, WeaponProperties>([
+  ['Dagger', { damage: 3, skillBonus: 0, model: genericModel }],
+  ['Cast Iron Pan', { damage: 7, skillBonus: 1, model: genericModel }],
+  ['War Hammer', { damage: 12, skillBonus: -1, model: genericModel }],
+  ['Hatchet', { damage: 3, skillBonus: 4, model: genericModel }],
+  ['Battleaxe', { damage: 10, skillBonus: 2, model: genericModel }],
+  ['Sword', { damage: 7, skillBonus: 3, model: genericModel }],
+  ['Baton', { damage: 2, skillBonus: 7, model: genericModel }],
+  ['Battle Staff', { damage: 6, skillBonus: 3, model: genericModel }],
 ]);
 
 export default class Weapon extends Entity {
@@ -24,7 +33,7 @@ export default class Weapon extends Entity {
   skillBonus: number;
 
   constructor(name: string = Weapon.randomWeaponName()) {
-    super(Weapon.character, Weapon.isCollidable);
+    super(weapons.get(name).model, Weapon.character, Weapon.isCollidable);
 
     this.name = name;
     this.damage = weapons.get(name)?.damage ?? 0;
