@@ -125,6 +125,8 @@ export default class Grid {
     return { tile, entity, collision };
   }
 
+  // If tiles is null, then the entities aren't added a children to their
+  // ModelNodes. It's up to the caller to remedy that.
   addEntity(entity: Entity, { x, y }: Position): void {
     if (entity instanceof Player) {
       this.player = <Player> entity;
@@ -138,6 +140,7 @@ export default class Grid {
     // Record entity's position on grid
     this.entityLookup[y][x] = entity;
     this.positionLookup.set(entity, { x, y });
+    if (this.tiles) this.tiles[y][x].modelNode.addChild(entity.modelNode);
   }
 
   removeEntity(entity: Entity): Entity {
@@ -220,6 +223,10 @@ export default class Grid {
           return new FloorTile();
       }
     }));
+
+    this.positionLookup.forEach(({ x, y }, entity) => {
+      this.tiles[y][x].modelNode.addChild(entity.modelNode);
+    });
   }
 
   private forSubtypeOfEntity(
