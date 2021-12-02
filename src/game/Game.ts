@@ -156,13 +156,20 @@ export default class Game {
     if (SP > enemy.skill) {
       // Attack hit
       enemy.health -= this.player.equippedWeapon.damage;
-      this.addMessage(`${enemy.name} took ${this.player.equippedWeapon.damage} damage. ${enemy.name} has ${enemy.health} health remaining`);
+
+      this.addMessage(`${enemy.name} took ${this.player.equippedWeapon.damage} damage. ${enemy.name} has ${Math.max(enemy.health, 0)} health remaining`);
 
       if (enemy.health <= 0) {
         // Enemy defeated
         this.player.skill += 1;
         this.grid.removeEntity(enemy);
         this.addMessage(`${enemy.name} has been defeated`);
+
+        if (this.grid.getEntities().enemies.size === 0) {
+          this.addMessage('All Enemies Defeated');
+          this.addMessage('You Win');
+          this.stopGame();
+        }
         this.printGame();
         return;
       }
