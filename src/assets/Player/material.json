@@ -1,6 +1,6 @@
 {
   "type": "PBRMaterial",
-  "albedo": "Rayman.png",
-  "normal": "rusted_metal_normal.png",
-  "mrao": "rusted_metal_mrao.png"
+  "albedo": "player_albedo.png",
+  "normal": "player_normal.png",
+  "mrao": "player_mrao.png"
 }

@@ -1,6 +1,6 @@
 {
   "type": "Model",
-  "model": "raymanModel.obj",
+  "model": "player.obj",
   "material": "material.json",
-  "name": "Rayman"
+  "name": "Player"
 }
