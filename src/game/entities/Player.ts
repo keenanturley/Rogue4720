@@ -21,11 +21,17 @@ export default class Player extends Entity {
   // equippedWeapon: Entity;
 
   constructor() {
+    const { xLen, yLen, zLen } = model.extents;
     super(model, Player.character, Player.isCollidable);
     this.health = 20;
     this.skill = 0;
     this.inventory = new Inventory();
     this.equippedWeapon = null;
+
+    let maxLen = xLen;
+    if (maxLen < yLen) maxLen = yLen;
+    if (maxLen < zLen) maxLen = zLen;
+    this.modelNode.localTransform.scale = [1 / maxLen, 1 / maxLen, 1 / maxLen];
   }
 
   pickUpWeapon(weapon: Weapon) {

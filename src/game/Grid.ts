@@ -153,6 +153,7 @@ export default class Grid {
     const { x, y } = this.positionLookup.get(entity);
     this.entityLookup[y][x] = undefined;
     this.positionLookup.delete(entity);
+    entity.modelNode.removeSelf();
 
     return entity;
   }
@@ -163,6 +164,7 @@ export default class Grid {
     this.entityLookup[oldY][oldX] = undefined;
     this.entityLookup[newY][newX] = entity;
     this.positionLookup.set(entity, { x: newX, y: newY });
+    this.tiles[newY][newX].modelNode.addChild(entity.modelNode);
   }
 
   stringRepresentation(): string {

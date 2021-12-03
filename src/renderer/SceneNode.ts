@@ -55,4 +55,8 @@ export default class SceneNode {
     node.parent = null;
     this.children.delete(node);
   }
+
+  removeSelf() {
+    this.getParent().removeChild(this);
+  }
 }

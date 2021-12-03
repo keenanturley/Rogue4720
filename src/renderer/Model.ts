@@ -6,6 +6,7 @@ import MeshNode from './MeshNode';
 import Transform from './Transform';
 import { Material } from './materials/_MaterialInternal';
 import ModelNode from './ModelNode';
+import ModelExtents from './ModelExtents';
 
 type ResourceSchema = {
   type: 'Model';
@@ -38,11 +39,14 @@ export default class Model {
 
   readonly material: Material;
 
+  readonly extents: ModelExtents;
+
   name: string;
 
   constructor(meshes: Array<Mesh>, material: Material, name?: string) {
     this.meshes = meshes;
     this.material = material;
+    this.extents = this.calcModelExtents();
 
     this.name = name ?? `model#${Model.numModels}`;
     Model.numModels += 1;
@@ -57,6 +61,51 @@ export default class Model {
     });
 
     return modelNode;
+  }
+
+  private calcModelExtents(): ModelExtents {
+    let minX = this.meshes[0].position[0];
+    let maxX = this.meshes[0].position[0];
+    let minY = this.meshes[0].position[1];
+    let maxY = this.meshes[0].position[1];
+    let minZ = this.meshes[0].position[2];
+    let maxZ = this.meshes[0].position[2];
+
+    this.meshes.forEach((mesh: Mesh) => {
+      mesh.position.forEach((v: number, j: number) => {
+        switch (j % 3) {
+          case 0:
+            if (v < minX) minX = v;
+            else if (v > maxX) maxX = v;
+            break;
+
+          case 1:
+            if (v < minY) minY = v;
+            else if (v > maxY) maxY = v;
+            break;
+
+          case 2:
+            if (v < minZ) minZ = v;
+            else if (v > maxZ) maxZ = v;
+            break;
+
+          default:
+            throw new Error('This shouldnt happen because...math');
+        }
+      });
+    });
+
+    return {
+      minX,
+      maxX,
+      minY,
+      maxY,
+      minZ,
+      maxZ,
+      xLen: maxX - minX,
+      yLen: maxY - minY,
+      zLen: maxZ - minZ,
+    };
   }
 
   static createMeshArray(model: Group): Array<Mesh> {

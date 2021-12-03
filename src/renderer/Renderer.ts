@@ -57,7 +57,7 @@ export default class Renderer {
   drawNode(node: SceneNode, parentMatrix: m4.Mat4) {
     // Compute this node's matrix
     let matrix = node.localTransform.getMatrix();
-    matrix = m4.multiply(matrix, parentMatrix);
+    matrix = m4.multiply(parentMatrix, matrix);
 
     // Draw self
     if (node instanceof MeshNode) {
