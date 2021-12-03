@@ -1,7 +1,16 @@
 import Model from '../../renderer/Model';
 import Entity from './Entity';
 
-const genericModel = await Model.load('/assets/BattleAxe/model.json');
+const models = {
+  dagger: await Model.load('/assets/dagger/model.json'),
+  castIronPan: await Model.load('/assets/cast_iron_pan/model.json'),
+  warHammer: await Model.load('/assets/war_hammer/model.json'),
+  hatchet: await Model.load('/assets/hatchet/model.json'),
+  battleaxe: await Model.load('/assets/battleaxe/model.json'),
+  sword: await Model.load('/assets/sword/model.json'),
+  baton: await Model.load('/assets/baton/model.json'),
+  battleStaff: await Model.load('/assets/battle_staff/model.json'),
+};
 
 interface WeaponProperties {
   damage: number;
@@ -11,14 +20,14 @@ interface WeaponProperties {
 
 /* eslint quote-props: ["error", "consistent"] */
 const weapons = new Map<string, WeaponProperties>([
-  ['Dagger', { damage: 3, skillBonus: 0, model: genericModel }],
-  ['Cast Iron Pan', { damage: 7, skillBonus: 1, model: genericModel }],
-  ['War Hammer', { damage: 12, skillBonus: -1, model: genericModel }],
-  ['Hatchet', { damage: 3, skillBonus: 4, model: genericModel }],
-  ['Battleaxe', { damage: 10, skillBonus: 2, model: genericModel }],
-  ['Sword', { damage: 7, skillBonus: 3, model: genericModel }],
-  ['Baton', { damage: 2, skillBonus: 7, model: genericModel }],
-  ['Battle Staff', { damage: 6, skillBonus: 3, model: genericModel }],
+  ['Dagger', { damage: 3, skillBonus: 0, model: models.dagger }],
+  ['Cast Iron Pan', { damage: 7, skillBonus: 1, model: models.castIronPan }],
+  ['War Hammer', { damage: 12, skillBonus: -1, model: models.warHammer }],
+  ['Hatchet', { damage: 3, skillBonus: 4, model: models.hatchet }],
+  ['Battleaxe', { damage: 10, skillBonus: 2, model: models.battleaxe }],
+  ['Sword', { damage: 7, skillBonus: 3, model: models.sword }],
+  ['Baton', { damage: 2, skillBonus: 7, model: models.baton }],
+  ['Battle Staff', { damage: 6, skillBonus: 3, model: models.battleStaff }],
 ]);
 
 export default class Weapon extends Entity {

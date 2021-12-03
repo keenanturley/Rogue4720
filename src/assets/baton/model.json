@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "baton.obj",
+  "material": "../weapon_material.json",
+  "name": "Baton"
+}

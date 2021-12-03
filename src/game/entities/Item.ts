@@ -2,7 +2,7 @@ import Model from '../../renderer/Model';
 import Entity from './Entity';
 
 // const rationModel = await Model.load('/assets/Ration/model.json');
-const genericModel = await Model.load('/assets/BattleAxe/model.json');
+const genericModel = await Model.load('/assets/battleaxe/model.json');
 
 interface ItemProperties {
   effectHP: number;

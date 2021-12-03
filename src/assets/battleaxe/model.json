@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "battleaxe.obj",
+  "material": "../weapon_material.json",
+  "name": "Battleaxe"
+}

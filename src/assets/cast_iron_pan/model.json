@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "cast_iron_pan.obj",
+  "material": "../weapon_material.json",
+  "name": "Cast Iron Pan"
+}

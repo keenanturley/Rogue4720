@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "battle_staff.obj",
+  "material": "../weapon_material.json",
+  "name": "Battle Staff"
+}
