@@ -50,7 +50,7 @@ export default class Grid {
     // that for the tileSize
     const tileSize = 1.0;
     // TODO: remove after having movable camera
-    const zFactor = -1;
+    const zFactor = 1;
     this.tiles.forEach((row, y) => {
       row.forEach((tile, x) => {
         this.sceneNode.addChild(tile.modelNode);
