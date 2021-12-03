@@ -27,6 +27,12 @@ const KEY_MAP = {
     Numpad6: 'right',
     Numpad9: 'up',
     Numpad7: 'down',
+    h: 'left',
+    j: 'backward',
+    k: 'forward',
+    l: 'right',
+    ']': 'up',
+    '[': 'down',
   },
   look: {
     ArrowUp: 'up',
