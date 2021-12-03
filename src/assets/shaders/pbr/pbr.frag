@@ -11,8 +11,8 @@ uniform sampler2D u_normal;
 uniform sampler2D u_mrao;
 uniform vec3 u_dLightDirection;
 uniform vec3 u_dLightColor;
-uniform vec3 u_pLightPostions[4];
-uniform vec3 u_pLightColors[4];
+uniform vec3 u_pLightPositions[1];
+uniform vec3 u_pLightColors[1];
 uniform vec3 u_eyePosition;
 
 out vec4 outColor;
@@ -177,8 +177,8 @@ void main() {
 	Lo += calcDirLight(u_dLightDirection, u_dLightColor, N, V);
 
 	// calculate each point light
-	// for(int i = 0; i < 4; i++)
-	// 	Lo += calcPointLight(u_pLightPostions[i], u_pLightColors[i], N, fragPosition, V);
+	for(int i = 0; i < 4; i++)
+		Lo += calcPointLight(u_pLightPositions[i], u_pLightColors[i], N, fragPosition, V);
 	
 
 	// now calculate final color;
