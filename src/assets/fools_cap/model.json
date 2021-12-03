@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "fools_cap.obj",
+  "material": "material.json",
+  "name": "Fool's Cap"
+}

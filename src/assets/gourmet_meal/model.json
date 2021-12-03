@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "gourmet_meal.obj",
+  "material": "material.json",
+  "name": "Gourmet Meal"
+}

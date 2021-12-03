@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "ration.obj",
+  "material": "material.json",
+  "name": "Ration"
+}

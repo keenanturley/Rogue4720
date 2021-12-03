@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "gourmet_meal_albedo.png",
+  "normal": "gourmet_meal_normal.png",
+  "mrao": "gourmet_meal_mrao.png"
+}

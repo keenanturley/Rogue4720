@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "fools_cap_albedo.png",
+  "normal": "fools_cap_normal.png",
+  "mrao": "fools_cap_mrao.png"
+}

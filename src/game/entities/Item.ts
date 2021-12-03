@@ -2,7 +2,12 @@ import Model from '../../renderer/Model';
 import Entity from './Entity';
 
 // const rationModel = await Model.load('/assets/Ration/model.json');
-const genericModel = await Model.load('/assets/battleaxe/model.json');
+const models = {
+  ration: await Model.load('/assets/ration/model.json'),
+  gourmetMeal: await Model.load('/assets/gourmet_meal/model.json'),
+  silverRing: await Model.load('/assets/silver_ring/model.json'),
+  foolsCap: await Model.load('/assets/fools_cap/model.json'),
+};
 
 interface ItemProperties {
   effectHP: number;
@@ -14,16 +19,16 @@ interface ItemProperties {
 /* eslint quote-props: ["error", "consistent"] */
 const items = new Map<string, ItemProperties>([
   ['Rations', {
-    effectHP: 5, effectSP: 0, description: 'Give 5 HP', model: genericModel,
+    effectHP: 5, effectSP: 0, description: 'Give 5 HP', model: models.ration,
   }],
   ['Gourmet Meal', {
-    effectHP: 10, effectSP: 0, description: 'Give 10 HP', model: genericModel,
+    effectHP: 10, effectSP: 0, description: 'Give 10 HP', model: models.gourmetMeal,
   }],
   ['Silver Ring', {
-    effectHP: 0, effectSP: 5, description: 'Give 5 SP', model: genericModel,
+    effectHP: 0, effectSP: 5, description: 'Give 5 SP', model: models.silverRing,
   }],
   ['Fool\'s Cap', {
-    effectHP: 10, effectSP: -10, description: 'Give 10 HP, Remove 10 SP', model: genericModel,
+    effectHP: 10, effectSP: -10, description: 'Give 10 HP, Remove 10 SP', model: models.foolsCap,
   }],
 ]);
 

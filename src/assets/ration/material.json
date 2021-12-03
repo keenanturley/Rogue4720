@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "ration_albedo.png",
+  "normal": "ration_normal.png",
+  "mrao": "ration_mrao.png"
+}

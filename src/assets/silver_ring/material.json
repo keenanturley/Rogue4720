@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "silver_ring_albedo.png",
+  "normal": "silver_ring_normal.png",
+  "mrao": "silver_ring_mrao.png"
+}

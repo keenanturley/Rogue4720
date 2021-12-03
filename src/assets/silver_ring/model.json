@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "silver_ring.obj",
+  "material": "material.json",
+  "name": "Silver Ring"
+}
