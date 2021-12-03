@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "ork.obj",
+  "material": "material.json",
+  "name": "Ork"
+}

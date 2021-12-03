@@ -64,6 +64,19 @@ export default class Model {
   }
 
   private calcModelExtents(): ModelExtents {
+    if (this.meshes.length < 1) {
+      return {
+        minX: 0,
+        maxX: 0,
+        minY: 0,
+        maxY: 0,
+        minZ: 0,
+        maxZ: 0,
+        xLen: 0,
+        yLen: 0,
+        zLen: 0,
+      };
+    }
     let minX = this.meshes[0].position[0];
     let maxX = this.meshes[0].position[0];
     let minY = this.meshes[0].position[1];

@@ -1,7 +1,13 @@
 import Model from '../../renderer/Model';
 import Entity from './Entity';
 
-const genericModel = await Model.load('/assets/BattleAxe/model.json');
+const models = {
+  maggot: await Model.load('/assets/Maggot/model.json'),
+  slimeMold: await Model.load('/assets/SlimeMold/model.json'),
+  goblin: await Model.load('/assets/Goblin/model.json'),
+  ork: await Model.load('/assets/Ork/model.json'),
+  vampire: await Model.load('/assets/Vampire/model.json'),
+};
 
 interface EnemyProperties {
   health: number;
@@ -13,19 +19,19 @@ interface EnemyProperties {
 /* eslint quote-props: ["error", "consistent"] */
 const enemies = new Map<string, EnemyProperties>([
   ['Maggot', {
-    health: 4, skill: 0, damage: 4, model: genericModel,
+    health: 4, skill: 0, damage: 4, model: models.maggot,
   }],
   ['Slime Mold', {
-    health: 7, skill: 1, damage: 3, model: genericModel,
+    health: 7, skill: 1, damage: 3, model: models.slimeMold,
   }],
   ['Goblin', {
-    health: 9, skill: 4, damage: 5, model: genericModel,
+    health: 9, skill: 4, damage: 5, model: models.goblin,
   }],
   ['Ork', {
-    health: 11, skill: 2, damage: 7, model: genericModel,
+    health: 11, skill: 2, damage: 7, model: models.ork,
   }],
   ['Vampire', {
-    health: 20, skill: 9, damage: 10, model: genericModel,
+    health: 20, skill: 9, damage: 10, model: models.vampire,
   }],
 ]);
 

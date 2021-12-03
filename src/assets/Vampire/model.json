@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "vampire.obj",
+  "material": "material.json",
+  "name": "Vampire"
+}

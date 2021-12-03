@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "maggot.obj",
+  "material": "material.json",
+  "name": "Maggot"
+}

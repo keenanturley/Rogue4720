@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "goblin_albedo.png",
+  "normal": "goblin_normal.png",
+  "mrao": "goblin_mrao.png"
+}

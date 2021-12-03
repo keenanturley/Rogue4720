@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "maggot_albedo.png",
+  "normal": "maggot_normal.png",
+  "mrao": "maggot_mrao.png"
+}
