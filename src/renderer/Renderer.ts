@@ -17,7 +17,9 @@ export default class Renderer {
 
   private animationRequestId;
 
-  preRender: () => void;
+  private previousTime;
+
+  preRender: (deltaTime: number) => void;
 
   // Time in ms the last frame took to render
   frameTime: number = 0;
@@ -26,7 +28,7 @@ export default class Renderer {
     gl: WebGL2RenderingContext,
     scene: Scene = new Scene(),
     camera: PerspectiveCamera = new PerspectiveCamera(),
-    preRender: () => void = () => {},
+    preRender: (deltaTime: number) => void = () => {},
   ) {
     this.gl = gl;
     this.scene = scene;
@@ -91,9 +93,11 @@ export default class Renderer {
   }
 
   render(time: number) {
+    const deltaTime = this.previousTime ? time - this.previousTime : 0;
+
     const startTime = performance.now();
 
-    this.preRender();
+    this.preRender(deltaTime);
 
     resizeCanvasToDisplaySize(this.gl.canvas);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
@@ -104,6 +108,7 @@ export default class Renderer {
     const endTime = performance.now();
     this.frameTime = endTime - startTime;
 
+    this.previousTime = time;
     this.animationRequestId = requestAnimationFrame((newTime: number) => this.render(newTime));
   }
 

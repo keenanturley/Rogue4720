@@ -46,7 +46,7 @@ export default class PerspectiveCamera extends Camera {
   }
 
   getViewMatrix(): m4.Mat4 {
-    return this.transform.getMatrix();
+    return m4.inverse(this.transform.getMatrix());
   }
 
   private static toRadians(degrees: number) {

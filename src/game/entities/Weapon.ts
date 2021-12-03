@@ -1,7 +1,7 @@
 import Model from '../../renderer/Model';
 import Entity from './Entity';
 
-const genericModel = await Model.load('/assets/GenericWeapon/model.json');
+const genericModel = await Model.load('/assets/BattleAxe/model.json');
 
 interface WeaponProperties {
   damage: number;

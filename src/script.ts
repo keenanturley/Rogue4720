@@ -24,11 +24,14 @@ import DebugUI from './renderer/DebugUI';
 
   // Create a Camera to view the scene with
   const camera = new PerspectiveCamera(
-    new Transform([-5, -10, -5], [20, 40, 0]),
+    new Transform([0, 2, 0], [-20, 0, 0]),
   );
 
+  const cameraSpeed = 1.5;
   // Create the renderer and begin rendering
-  const preRender = () => {
+  const preRender = (deltaTime: number) => {
+    const cameraDelta = cameraSpeed * (deltaTime / 1000);
+    camera.transform.position[0] += cameraDelta;
     camera.aspect = gl.canvas.width / gl.canvas.height;
   };
   const renderer = new Renderer(gl, scene, camera, preRender);
