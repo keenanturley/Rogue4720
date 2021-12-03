@@ -1,9 +1,13 @@
+import { v3 } from 'twgl.js';
 import KeyListener from './KeyListener';
 import Grid from './Grid';
 import Player from './entities/Player';
 import Enemy from './entities/Enemy';
 import Weapon from './entities/Weapon';
 import Item from './entities/Item';
+import Renderer from '../renderer/Renderer';
+import PerspectiveCamera from '../renderer/PerspectiveCamera';
+import CameraController from './CameraController';
 
 enum State {
   WALKING,
@@ -13,6 +17,12 @@ enum State {
 export default class Game {
   grid: Grid;
 
+  renderer: Renderer;
+
+  private camera: PerspectiveCamera;
+
+  private cameraController: CameraController;
+
   private player: Player;
 
   private state: State;
@@ -21,8 +31,19 @@ export default class Game {
 
   private message: string;
 
-  constructor(grid: Grid) {
-    this.grid = grid;
+  constructor(gl: WebGL2RenderingContext) {
+    this.camera = new PerspectiveCamera();
+    this.cameraController = new CameraController(this.camera, 3);
+    this.renderer = new Renderer(gl, undefined, this.camera);
+
+    // Attach the camera controller update to the renderer
+    this.renderer.addUpdateCallback((deltaTime) => this.cameraController.update(deltaTime));
+    // Update camera aspect ratio
+    this.renderer.addUpdateCallback(() => {
+      this.camera.aspect = this.renderer.gl.canvas.width / this.renderer.gl.canvas.height;
+    });
+
+    this.grid = new Grid(this.renderer.scene);
     this.player = this.grid.getPlayer();
 
     this.state = State.WALKING;
@@ -43,20 +64,28 @@ export default class Game {
 
       // Select inventory weapon/item with '1'-'9'
       [
-        ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
+        ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5',
+          'Digit6', 'Digit7', 'Digit8', 'Digit9'],
         ({ key }: KeyboardEvent) => this.selectFromInventory(Number(key) - 1),
       ],
     ]);
+    this.cameraController.bindKeys(this.keyListener);
     this.keyListener.startListening();
 
     this.message = '';
 
     this.addMessage('Game Start');
     this.printGame();
+
+    // Begin rendering
+    requestAnimationFrame((time) => {
+      this.renderer.render(time);
+    });
   }
 
   stopGame(): void {
     this.keyListener.stopListening();
+    this.renderer.stopRendering();
   }
 
   // update(handler?: Function): void {
@@ -114,6 +143,12 @@ export default class Game {
 
     this.postTurn();
     this.printGame();
+  }
+
+  private moveCamera(translation: v3.Vec3) {
+    const { position } = this.renderer.camera.transform;
+    v3.add(position, translation, position);
+    return position;
   }
 
   private attack() : void {

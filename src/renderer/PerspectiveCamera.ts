@@ -1,10 +1,9 @@
 import { m4 } from 'twgl.js';
+import toRadians from '../util/Math';
 import Camera from './Camera';
 import Transform from './Transform';
 
 export default class PerspectiveCamera extends Camera {
-  transform: Transform;
-
   fov: number;
 
   aspect: number;
@@ -38,7 +37,7 @@ export default class PerspectiveCamera extends Camera {
 
   getProjectionMatrix(): m4.Mat4 {
     return m4.perspective(
-      PerspectiveCamera.toRadians(this.fov),
+      toRadians(this.fov),
       this.aspect,
       this.zNear,
       this.zFar,
@@ -47,9 +46,5 @@ export default class PerspectiveCamera extends Camera {
 
   getViewMatrix(): m4.Mat4 {
     return m4.inverse(this.transform.getMatrix());
-  }
-
-  private static toRadians(degrees: number) {
-    return degrees * (Math.PI / 180.0);
   }
 }

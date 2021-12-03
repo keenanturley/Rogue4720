@@ -177,12 +177,12 @@ void main() {
 	Lo += calcDirLight(u_dLightDirection, u_dLightColor, N, V);
 
 	// calculate each point light
-	for(int i = 0; i < 4; i++)
-		Lo += calcPointLight(u_pLightPostions[i], u_pLightColors[i], N, fragPosition, V);
+	// for(int i = 0; i < 4; i++)
+	// 	Lo += calcPointLight(u_pLightPostions[i], u_pLightColors[i], N, fragPosition, V);
 	
 
 	// now calculate final color;
-	vec3 ambient = vec3(0.03) * albedo * ao;
+	vec3 ambient = vec3(0.01) * albedo * ao;
 	vec3 color = ambient + Lo;
 
 	color = color / (color + vec3(1.0));

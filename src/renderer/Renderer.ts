@@ -1,17 +1,20 @@
 import {
   drawBufferInfo, m4, resizeCanvasToDisplaySize, setBuffersAndAttributes, setUniforms,
 } from 'twgl.js';
+import Camera from './Camera';
 import MeshNode from './MeshNode';
 import PerspectiveCamera from './PerspectiveCamera';
 import Scene from './Scene';
 import SceneNode from './SceneNode';
+
+export type UpdateCallback = (deltaTime?: number) => void;
 
 export default class Renderer {
   gl: WebGL2RenderingContext;
 
   scene: Scene;
 
-  camera: PerspectiveCamera;
+  camera: Camera;
 
   rendererUniforms: object;
 
@@ -19,7 +22,7 @@ export default class Renderer {
 
   private previousTime;
 
-  preRender: (deltaTime: number) => void;
+  updateCallbacks: Set<UpdateCallback> = new Set();
 
   // Time in ms the last frame took to render
   frameTime: number = 0;
@@ -27,16 +30,14 @@ export default class Renderer {
   constructor(
     gl: WebGL2RenderingContext,
     scene: Scene = new Scene(),
-    camera: PerspectiveCamera = new PerspectiveCamera(),
-    preRender: (deltaTime: number) => void = () => {},
+    camera: Camera = new PerspectiveCamera(),
   ) {
     this.gl = gl;
     this.scene = scene;
     this.camera = camera;
-    this.preRender = preRender;
 
     // Content initialization
-    gl.clearColor(0.8, 0.8, 0.8, 1.0);
+    gl.clearColor(0.2, 0.075, 0.0, 1.0);
 
     // eslint-disable-next-line no-bitwise
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -90,6 +91,22 @@ export default class Renderer {
 
     // Draw all children
     node.getChildren().forEach((child) => this.drawNode(child, matrix));
+  }
+
+  addUpdateCallback(callback: UpdateCallback): void {
+    this.updateCallbacks.add(callback);
+  }
+
+  removeUpdateCallback(callback: UpdateCallback): boolean {
+    if (!this.updateCallbacks.has(callback)) {
+      return false;
+    }
+    this.updateCallbacks.delete(callback);
+    return true;
+  }
+
+  preRender(deltaTime: number) {
+    this.updateCallbacks.forEach((callback) => callback(deltaTime));
   }
 
   render(time: number) {

@@ -3,8 +3,6 @@ import Camera from './Camera';
 import Transform from './Transform';
 
 export default class OrthographicCamera extends Camera {
-  transform: Transform;
-
   left: number;
 
   right: number;
