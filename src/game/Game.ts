@@ -14,6 +14,13 @@ enum State {
   INVENTORY,
 }
 
+enum MoveDirection {
+  Forward,
+  Backward,
+  Left,
+  Right,
+}
+
 export default class Game {
   grid: Grid;
 
@@ -45,16 +52,18 @@ export default class Game {
 
     this.grid = new Grid(this.renderer.scene);
     this.player = this.grid.getPlayer();
+    this.cameraController.moveTo(this.player.cameraTarget.getWorldPosition());
+    this.camera.transform.rotation = [-45, 180, 0];
 
     this.state = State.WALKING;
 
     this.keyListener = new KeyListener();
     this.keyListener.addListeners([
       // Move player with 'w', 'a', 's', 'd'
-      ['w', () => this.movePlayer([0, -1])],
-      ['a', () => this.movePlayer([-1, 0])],
-      ['s', () => this.movePlayer([0, 1])],
-      ['d', () => this.movePlayer([1, 0])],
+      ['w', () => this.movePlayer(MoveDirection.Forward)],
+      ['a', () => this.movePlayer(MoveDirection.Left)],
+      ['s', () => this.movePlayer(MoveDirection.Backward)],
+      ['d', () => this.movePlayer(MoveDirection.Right)],
 
       // Open/close inventory with 'i'
       ['i', () => this.toggleInventory()],
@@ -92,8 +101,31 @@ export default class Game {
   //   if (handler) handler();
   // }
   //
-  private movePlayer([deltaX, deltaY]: [number, number]): void {
+  private movePlayer(dir: MoveDirection): void {
     if (this.state !== State.WALKING) return;
+
+    let deltaX = 0;
+    let deltaY = 0;
+    switch (dir) {
+      case MoveDirection.Forward:
+        this.player.modelNode.localTransform.rotation = [0, 0, 0];
+        deltaY = 1;
+        break;
+      case MoveDirection.Backward:
+        this.player.modelNode.localTransform.rotation = [0, 180, 0];
+        deltaY = -1;
+        break;
+      case MoveDirection.Left:
+        this.player.modelNode.localTransform.rotation = [0, 90, 0];
+        deltaX = 1;
+        break;
+      case MoveDirection.Right:
+        this.player.modelNode.localTransform.rotation = [0, -90, 0];
+        deltaX = -1;
+        break;
+      default:
+        break;
+    }
 
     const { x: currentX, y: currentY } = this.grid.getPositionOf(this.player);
     const newPosition = {
@@ -141,6 +173,8 @@ export default class Game {
       this.grid.moveEntity(this.player, newPosition);
     }
 
+    const newCameraPosition = this.player.cameraTarget.getWorldPosition();
+    this.cameraController.moveTo(newCameraPosition);
     this.postTurn();
     this.printGame();
   }
@@ -316,7 +350,7 @@ export default class Game {
   private printGame(): void {
     /* eslint-disable no-console */
     // Grid
-    console.log(this.grid.stringRepresentation());
+    // console.log(this.grid.stringRepresentation());
 
     // Player stats
     console.log(this.player.stringRepresentation());

@@ -1,4 +1,4 @@
-import { v3 } from 'twgl.js';
+import { v3, m4 } from 'twgl.js';
 import Camera from '../renderer/Camera';
 import KeyListener, { KeyPressType } from './KeyListener';
 
@@ -43,7 +43,7 @@ const KEY_MAP = {
 };
 
 export default class CameraController {
-  activeInputs: CameraInputs = {
+  static readonly defaultInputs: CameraInputs = {
     movement: {
       up: false,
       down: false,
@@ -66,6 +66,7 @@ export default class CameraController {
     public moveSpeed: number = 1.0,
     // Degrees per second
     public lookSensitivity: number = 1.0,
+    public activeInputs = CameraController.defaultInputs,
   ) {}
 
   update(deltaTime: number) {
@@ -96,6 +97,10 @@ export default class CameraController {
   private move(translation: v3.Vec3) {
     const { position } = this.camera.transform;
     v3.add(position, translation, position);
+  }
+
+  moveTo(position: v3.Vec3) {
+    this.camera.transform.position = position;
   }
 
   private getMoveVector(): v3.Vec3 {

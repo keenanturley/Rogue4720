@@ -3,6 +3,9 @@ import Weapon from './Weapon';
 import Item from './Item';
 import Inventory from '../Inventory';
 import Model from '../../renderer/Model';
+import SceneNode from '../../renderer/SceneNode';
+import toRadians from '../../util/Math';
+import Transform from '../../renderer/Transform';
 
 const model = await Model.load('/assets/Player/model.json');
 
@@ -18,9 +21,13 @@ export default class Player extends Entity {
   inventory: Inventory;
 
   equippedWeapon: Weapon;
-  // equippedWeapon: Entity;
+
+  cameraTarget: SceneNode;
 
   constructor() {
+    const initCamDistance = 4;
+    const initCamAngle = 45;
+
     const { xLen, yLen, zLen } = model.extents;
     super(model, Player.character, Player.isCollidable);
     this.health = 20;
@@ -32,6 +39,18 @@ export default class Player extends Entity {
     if (maxLen < yLen) maxLen = yLen;
     if (maxLen < zLen) maxLen = zLen;
     this.modelNode.localTransform.scale = [1 / maxLen, 1 / maxLen, 1 / maxLen];
+    this.cameraTarget = new SceneNode(
+      'Player Camera Target',
+      new Transform([
+        0,
+        initCamDistance * Math.sin(toRadians(initCamAngle)),
+        -initCamDistance * Math.cos(toRadians(initCamAngle)),
+      ]),
+    );
+
+    // Assuming Raymon is initially facing in the +z direction. Pray this never
+    // changes.
+    this.modelNode.addChild(this.cameraTarget);
   }
 
   pickUpWeapon(weapon: Weapon) {
