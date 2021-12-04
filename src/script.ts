@@ -1,5 +1,5 @@
 import PerspectiveCamera from './renderer/PerspectiveCamera';
-import Renderer from './renderer/Renderer';
+import Renderer, { Rendering } from './renderer/Renderer';
 import Scene from './renderer/Scene';
 import Game from './game/Game';
 import Grid from './game/Grid';
@@ -27,7 +27,7 @@ import DebugUI from './renderer/DebugUI';
     new Transform([0, 2, 0], [-20, 0, 0]),
   );
 
-  const cameraSpeed = 1.5;
+  const cameraSpeed = 0.0;
   // Create the renderer and begin rendering
   const preRender = (deltaTime: number) => {
     const cameraDelta = cameraSpeed * (deltaTime / 1000);
@@ -41,7 +41,8 @@ import DebugUI from './renderer/DebugUI';
 
   // Begin rendering
   requestAnimationFrame((time) => {
-    renderer.render(time);
+    renderer.depthMapRender(time);
+    renderer.render(time, Rendering.normal);
   });
 
   if (module.hot) {
