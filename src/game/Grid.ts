@@ -29,9 +29,10 @@ export default class Grid {
 
   private sceneNode: SceneNode;
 
+  private scene: Scene;
+
   constructor(scene: Scene) {
-    this.sceneNode = new SceneNode('Grid');
-    scene.addNode(this.sceneNode);
+    this.scene = scene;
     this.entities = {
       enemies: new Set<Enemy>(),
       weapons: new Set<Weapon>(),
@@ -40,8 +41,7 @@ export default class Grid {
 
     this.entityLookup = [];
     this.positionLookup = new Map<Entity, Position>();
-    this.loadGridFromString(Dungeon.generate(35, 35, 7));
-    this.buildDungeon();
+    this.generateMap();
   }
 
   // Should only be called once after the map has been set
@@ -70,6 +70,24 @@ export default class Grid {
   getEntityAt({ x, y }: Position) { return this.entityLookup[y][x]; }
 
   getPositionOf(entity: Entity) { return this.positionLookup.get(entity); }
+
+  generateMap() {
+    if (this.sceneNode) {
+      this.entities = {
+        enemies: new Set<Enemy>(),
+        weapons: new Set<Weapon>(),
+        items: new Set<Item>(),
+      };
+
+      this.entityLookup = [];
+      this.positionLookup = new Map<Entity, Position>();
+      this.sceneNode.removeSelf();
+    }
+    this.sceneNode = new SceneNode('Grid');
+    this.scene.addNode(this.sceneNode);
+    this.loadGridFromString(Dungeon.generate(35, 35, 7));
+    this.buildDungeon();
+  }
 
   query(position: Position): { tile: Tile, entity: Entity, collision: boolean } {
     const tile = this.getTileAt(position);
