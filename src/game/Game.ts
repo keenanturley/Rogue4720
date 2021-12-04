@@ -180,6 +180,7 @@ export default class Game {
 
     const newCameraPosition = this.player.cameraTarget.getWorldPosition();
     this.cameraController.moveTo(newCameraPosition);
+    this.camera.transform.rotation = [-45, 180, 0];
     this.postTurn();
     this.printGame();
   }
