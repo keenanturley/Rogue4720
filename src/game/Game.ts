@@ -8,8 +8,10 @@ import Item from './entities/Item';
 import Renderer from '../renderer/Renderer';
 import PerspectiveCamera from '../renderer/PerspectiveCamera';
 import CameraController from './CameraController';
+// eslint-disable-next-line import/no-cycle
+import GamePanel from '../ui/game/GamePanel';
 
-enum State {
+export enum GameState {
   WALKING,
   INVENTORY,
 }
@@ -26,17 +28,19 @@ export default class Game {
 
   renderer: Renderer;
 
+  message: string;
+
+  gamePanel: GamePanel;
+
+  player: Player;
+
+  state: GameState;
+
   private camera: PerspectiveCamera;
 
   private cameraController: CameraController;
 
-  private player: Player;
-
-  private state: State;
-
   private keyListener: KeyListener;
-
-  private message: string;
 
   constructor(gl: WebGL2RenderingContext) {
     this.camera = new PerspectiveCamera();
@@ -55,7 +59,7 @@ export default class Game {
     this.cameraController.moveTo(this.player.cameraTarget.getWorldPosition());
     this.camera.transform.rotation = [-45, 180, 0];
 
-    this.state = State.WALKING;
+    this.state = GameState.WALKING;
 
     this.keyListener = new KeyListener();
     this.keyListener.addListeners([
@@ -81,6 +85,8 @@ export default class Game {
     this.cameraController.bindKeys(this.keyListener);
     this.keyListener.startListening();
 
+    this.gamePanel = new GamePanel(this);
+
     this.message = '';
 
     this.addMessage('Game Start');
@@ -102,8 +108,7 @@ export default class Game {
   // }
   //
   private movePlayer(dir: MoveDirection): void {
-    if (this.state !== State.WALKING) return;
-
+    if (this.state !== GameState.WALKING) return;
     let deltaX = 0;
     let deltaY = 0;
     switch (dir) {
@@ -186,7 +191,7 @@ export default class Game {
   }
 
   private attack() : void {
-    if (this.state !== State.WALKING) return;
+    if (this.state !== GameState.WALKING) return;
 
     // Search for an enemy withing the nearest four tiles
     const range = [0, -1, -1, 0, 0, 1, 1, 0];
@@ -276,20 +281,20 @@ export default class Game {
   }
 
   private toggleInventory(): void {
-    if (this.state === State.INVENTORY) {
+    if (this.state === GameState.INVENTORY) {
       // Close inventory
-      this.state = State.WALKING;
+      this.state = GameState.WALKING;
     } else {
       // Open inventory
       this.addMessage('You look at your inventory');
-      this.state = State.INVENTORY;
+      this.state = GameState.INVENTORY;
     }
 
     this.printGame();
   }
 
   private selectFromInventory(index: number): void {
-    if (this.state !== State.INVENTORY) return;
+    if (this.state !== GameState.INVENTORY) return;
     // if (index >= this.player.inventory.weapons.length) return;
     if (index >= this.player.inventory.inventory.length) return;
 
@@ -348,6 +353,9 @@ export default class Game {
   }
 
   private printGame(): void {
+    // Update the UI
+    this.gamePanel.update();
+
     /* eslint-disable no-console */
     // Grid
     // console.log(this.grid.stringRepresentation());
@@ -366,7 +374,7 @@ export default class Game {
       this.message = '';
     }
 
-    if (this.state === State.INVENTORY) {
+    if (this.state === GameState.INVENTORY) {
       // Inventory
       console.log(this.player.inventory.stringRepresentation());
     }

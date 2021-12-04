@@ -1,3 +1,4 @@
+import GamePanel from './ui/game/GamePanel';
 import Game from './game/Game';
 import './style.css';
 import DebugUI from './renderer/DebugUI';
