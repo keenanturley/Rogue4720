@@ -1,0 +1,5 @@
+{
+    "type": "Shader",
+    "vertexShader": "depthMap.vert",
+    "fragmentShader": "depthMap.frag"
+  }

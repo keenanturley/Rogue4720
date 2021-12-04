@@ -1,62 +1,45 @@
+type CallbackFunction = (keyEvent: KeyboardEvent) => void;
+
 export default class KeyListener {
-  private inputs = {
-    moveUp: false,
-    moveDown: false,
-    moveLeft: false,
-    moveRight: false,
-  };
+  private callbacks: Map<string, CallbackFunction>;
 
-  private keyDownHandler: (key: KeyboardEvent) => void;
+  private keyDownHandler: (keyEvent: KeyboardEvent) => void;
 
-  startListening(callback: () => void): void {
-    this.keyDownHandler = (key: KeyboardEvent) => {
-      if (this.registerInput(key)) {
-        callback();
-      }
+  constructor() {
+    this.callbacks = new Map<string, CallbackFunction>();
+
+    this.keyDownHandler = (keyEvent: KeyboardEvent) => {
+      // If callback exists for the given key or code
+      [keyEvent.key, keyEvent.code].find((key) => {
+        if (this.callbacks.has(key)) {
+          // Invoke callback
+          (this.callbacks.get(key))(keyEvent);
+          return true;
+        }
+        return false;
+      });
     };
-
-    window.addEventListener('keydown', this.keyDownHandler);
   }
 
-  getInputs() {
-    return this.inputs;
-  }
-
-  clearInputs(): void {
-    Object.keys(this.inputs).forEach((input) => {
-      this.inputs[input] = false;
+  addListener(keys: string | string[], callback: CallbackFunction): void {
+    // Add callback to the given key(s)
+    [keys].flat().forEach((key) => {
+      this.callbacks.set(key, callback);
     });
+  }
+
+  addListeners(listeners: Array<[string | string[], CallbackFunction]>): void {
+    // Add callback for each given key-callback pair
+    listeners.forEach(([keys, callback]) => {
+      this.addListener(keys, callback);
+    });
+  }
+
+  startListening(): void {
+    window.addEventListener('keydown', this.keyDownHandler);
   }
 
   stopListening(): void {
     window.removeEventListener('keydown', this.keyDownHandler);
-  }
-
-  private registerInput(key: KeyboardEvent): boolean {
-    let isRelevantInput: boolean = true;
-
-    switch (key.code) {
-      case 'ArrowUp': // fall through
-      case 'KeyW':
-        this.inputs.moveUp = true;
-        break;
-      case 'ArrowDown': // fall through
-      case 'KeyS':
-        this.inputs.moveDown = true;
-        break;
-      case 'ArrowLeft': // fall through
-      case 'KeyA':
-        this.inputs.moveLeft = true;
-        break;
-      case 'ArrowRight': // fall through
-      case 'KeyD':
-        this.inputs.moveRight = true;
-        break;
-      default:
-        isRelevantInput = false;
-        break;
-    }
-
-    return isRelevantInput;
   }
 }

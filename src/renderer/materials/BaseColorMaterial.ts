@@ -1,11 +1,17 @@
 import { v3 } from 'twgl.js';
-import Material from './Material';
+// eslint-disable-next-line import/no-cycle
+import { Material, BaseMaterialResourceSchema, materialLoaderMap } from './_MaterialInternal';
 import Shader from '../Shader';
-import baseColorVertexShader from '../shaders/baseColor.vert';
-import baseColorFragmentShader from '../shaders/baseColor.frag';
 import Color from '../Color';
 
-const baseColorShader = new Shader(baseColorVertexShader, baseColorFragmentShader);
+interface ResourceSchema extends BaseMaterialResourceSchema {
+  type: 'BaseColorMaterial';
+  // Color should be represented as in Color.fromHex()
+  color: string;
+}
+
+const shaderUrl = '/assets/shaders/baseColor/shader.json';
+const baseColorShader = await Shader.load(shaderUrl);
 
 const DEFAULT_U_COLOR = v3.create(0.0, 0.0, 0.0);
 
@@ -13,7 +19,8 @@ interface BaseColorMaterialUniforms {
   u_color: v3.Vec3;
 }
 
-export default class BaseColorMaterial extends Material<BaseColorMaterialUniforms> {
+// eslint-disable-next-line import/prefer-default-export
+export class BaseColorMaterial extends Material<BaseColorMaterialUniforms> {
   private color: Color;
 
   constructor(color: Color) {
@@ -29,4 +36,11 @@ export default class BaseColorMaterial extends Material<BaseColorMaterialUniform
   getColor(): Color {
     return this.color;
   }
+
+  static async loadFromConfig(url: string, config: ResourceSchema): Promise<BaseColorMaterial> {
+    const color = Color.fromHex(config.color);
+    return new BaseColorMaterial(color);
+  }
 }
+
+materialLoaderMap.set('BaseColorMaterial', BaseColorMaterial.loadFromConfig);

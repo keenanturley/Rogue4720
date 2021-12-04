@@ -26,11 +26,11 @@ export default class Transform {
      */
   getMatrix(): m4.Mat4 {
     const matrix = m4.identity();
-    m4.translate(matrix, this.position, matrix);
+    m4.scale(matrix, this.scale, matrix);
     m4.rotateX(matrix, Transform.toRadians(this.rotation[0]), matrix);
     m4.rotateY(matrix, Transform.toRadians(this.rotation[1]), matrix);
     m4.rotateZ(matrix, Transform.toRadians(this.rotation[2]), matrix);
-    m4.scale(matrix, this.scale, matrix);
+    m4.translate(matrix, this.position, matrix);
     return matrix;
   }
 

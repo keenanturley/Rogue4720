@@ -1,0 +1,5 @@
+{
+  "type": "Shader",
+  "vertexShader": "albedo.vert",
+  "fragmentShader": "albedo.frag"
+}

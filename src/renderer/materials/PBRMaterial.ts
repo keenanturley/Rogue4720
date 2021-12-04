@@ -1,10 +1,21 @@
-import Material from './Material';
+import * as Path from 'path';
+// eslint-disable-next-line import/no-cycle
+import {
+  Material, BaseMaterialResourceSchema, materialLoaderMap, MaterialType,
+} from './_MaterialInternal';
 import Shader from '../Shader';
-import PBRVertexShader from '../../shaders/pbr.vert';
-import PBRFragmentShader from '../../shaders/pbr.frag';
 import Texture from '../Texture';
+import SceneLightingSchema from '../SceneLightingSchema';
 
-const PBRShader = new Shader(PBRVertexShader, PBRFragmentShader);
+const PBRShader = await Shader.load('/assets/shaders/pbr/shader.json');
+
+interface ResourceSchema extends BaseMaterialResourceSchema {
+  type: 'PBRMaterial';
+  albedo: string;
+  normal: string;
+  mrao: string;
+  sceneLighting: string;
+}
 
 interface PBRMaterialUniforms {
   u_albedo: WebGLTexture;
@@ -17,6 +28,8 @@ interface PBRMaterialUniforms {
 }
 
 export default class PBRMaterial extends Material<PBRMaterialUniforms> {
+  static type: MaterialType = 'PBRMaterial';
+
   private albedo: Texture;
 
   private normal: Texture;
@@ -66,4 +79,31 @@ export default class PBRMaterial extends Material<PBRMaterialUniforms> {
     this.ligthColors = lightCols;
     this.uniforms.u_pLightColors = lightCols;
   }
+
+  static async loadFromConfig(url: string, config: ResourceSchema): Promise<PBRMaterial> {
+    const dir = Path.dirname(url);
+
+    const albedoUrl = Path.resolve(dir, config.albedo);
+    const albedo = await Texture.load(albedoUrl);
+
+    const normalUrl = Path.resolve(dir, config.normal);
+    const normal = await Texture.load(normalUrl);
+
+    const mraoUrl = Path.resolve(dir, config.mrao);
+    const mrao = await Texture.load(mraoUrl);
+
+    const sceneLightingPath = '/assets/lighting.json';
+    const configRequest = await fetch(sceneLightingPath);
+    const sceneLightingConfig = (await configRequest.json()) as SceneLightingSchema;
+    const {
+      pLightPositions, pLightColors, dLightDirection, dLightColor,
+    } = sceneLightingConfig;
+
+    return new PBRMaterial(
+      albedo, normal, mrao,
+      pLightPositions, pLightColors, dLightDirection, dLightColor,
+    );
+  }
 }
+
+materialLoaderMap.set('PBRMaterial', PBRMaterial.loadFromConfig);

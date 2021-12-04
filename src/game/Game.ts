@@ -1,142 +1,317 @@
 import KeyListener from './KeyListener';
+import Grid from './Grid';
+import Player from './entities/Player';
+import Enemy from './entities/Enemy';
+import Weapon from './entities/Weapon';
+import Item from './entities/Item';
 
-enum Tile {
-  FLOOR,
-  WALL,
-  UNDEFINED,
-}
-
-interface PlayerObject {
-  row: number;
-  column: number;
+enum State {
+  WALKING,
+  INVENTORY,
 }
 
 export default class Game {
-  map: Tile[][];
+  grid: Grid;
 
-  player: PlayerObject;
+  private player: Player;
+
+  private state: State;
 
   private keyListener: KeyListener;
 
-  constructor(map: string) {
-    this.loadMapFromString(map);
+  private message: string;
 
-    // Run step() when the KeyListener detects input
+  constructor(grid: Grid) {
+    this.grid = grid;
+    this.player = this.grid.getPlayer();
+
+    this.state = State.WALKING;
+
     this.keyListener = new KeyListener();
-    this.keyListener.startListening(() => this.step());
+    this.keyListener.addListeners([
+      // Move player with 'w', 'a', 's', 'd'
+      ['w', () => this.movePlayer([0, -1])],
+      ['a', () => this.movePlayer([-1, 0])],
+      ['s', () => this.movePlayer([0, 1])],
+      ['d', () => this.movePlayer([1, 0])],
 
-    // Print map when game starts
-    // eslint-disable-next-line no-console
-    console.log(this.textRender());
-  }
+      // Open/close inventory with 'i'
+      ['i', () => this.toggleInventory()],
 
-  step(): void {
-    const inputs = this.keyListener.getInputs();
+      // Attack Enemy
+      ['q', () => this.attack()],
 
-    // Attempt to move character
-    const previousRow = this.player.row;
-    const previousColumn = this.player.column;
+      // Select inventory weapon/item with '1'-'9'
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
+        ({ key }: KeyboardEvent) => this.selectFromInventory(Number(key) - 1),
+      ],
+    ]);
+    this.keyListener.startListening();
 
-    if (inputs.moveUp) this.player.row -= 1;
-    else if (inputs.moveDown) this.player.row += 1;
-    else if (inputs.moveLeft) this.player.column -= 1;
-    else if (inputs.moveRight) this.player.column += 1;
+    this.message = '';
 
-    if (this.collision(this.player.row, this.player.column)) {
-      this.player.row = previousRow;
-      this.player.column = previousColumn;
-    }
-
-    // Print map
-    // eslint-disable-next-line no-console
-    console.log(this.textRender());
-
-    this.keyListener.clearInputs();
-  }
-
-  textRender(): string {
-    // "Render" floors and walls
-    const textArray: string[][] = this.map.map((tileRow: Tile[]) => tileRow.map((tile: Tile) => {
-      switch (tile) {
-        case Tile.FLOOR:
-          return '.';
-        case Tile.WALL:
-          return '|';
-        default:
-          return ' ';
-      }
-    }));
-
-    // "Render" player
-    textArray[this.player.row][this.player.column] = '@';
-
-    let text = '';
-    textArray.forEach((row: string[]) => {
-      row.forEach((char: string) => {
-        text += char;
-      });
-      text += '\n';
-    });
-
-    return text;
+    this.addMessage('Game Start');
+    this.printGame();
   }
 
   stopGame(): void {
     this.keyListener.stopListening();
   }
 
-  private loadMapFromString(string: string): void {
-    this.player = {
-      row: undefined,
-      column: undefined,
+  // update(handler?: Function): void {
+  //   if (handler) handler();
+  // }
+  //
+  private movePlayer([deltaX, deltaY]: [number, number]): void {
+    if (this.state !== State.WALKING) return;
+
+    const { x: currentX, y: currentY } = this.grid.getPositionOf(this.player);
+    const newPosition = {
+      x: currentX + deltaX,
+      y: currentY + deltaY,
     };
 
-    let playerStartingPositionFound: boolean = false;
+    const { entity, collision } = this.grid.query(newPosition);
 
-    // Extract tile and player data from string
-    this.map = string.split('\n').map((stringRow: string, rowIndex: number) => stringRow.split('').map((character: string, columnIndex: number) => {
-      switch (character) {
-        case '.':
-          return Tile.FLOOR;
-        case '-': // fall through
-        case '|':
-          return Tile.WALL;
-        case '@':
-          this.player.row = rowIndex;
-          this.player.column = columnIndex;
-          playerStartingPositionFound = true;
-          return Tile.FLOOR;
+    // Check for entities
+    if (entity) {
+      switch (entity.constructor) {
+        case Enemy: {
+          const enemy = <Enemy> entity;
+
+          this.addMessage(`You bump into ${Game.nounPhrase(enemy)} ${enemy.stringRepresentation()}`);
+
+          break;
+        }
+
+        case Weapon: {
+          const weapon = <Weapon> entity;
+
+          this.player.pickUpWeapon(weapon);
+          this.grid.removeEntity(weapon);
+          this.addMessage(`You pick up ${Game.nounPhrase(weapon)}`);
+          break;
+        }
+        case Item: {
+          // Pick up item
+          const item = <Item> entity;
+
+          this.player.pickUpItem(item);
+          this.grid.removeEntity(item);
+          this.addMessage(`You pick up ${Game.nounPhrase(item)}`);
+          break;
+        }
         default:
-          return Tile.UNDEFINED;
+          break;
       }
-    }));
+    }
 
-    if (playerStartingPositionFound) {
+    // Check for collision
+    if (!collision) {
+      this.grid.moveEntity(this.player, newPosition);
+    }
+
+    this.postTurn();
+    this.printGame();
+  }
+
+  private attack() : void {
+    if (this.state !== State.WALKING) return;
+
+    // Search for an enemy withing the nearest four tiles
+    const range = [0, -1, -1, 0, 0, 1, 1, 0];
+    let enemy: Enemy;
+
+    const { x: playerX, y: playerY } = this.grid.getPositionOf(this.player);
+
+    for (let i = 0; i < range.length; i += 2) {
+      const checkPosition = {
+        x: playerX + range[i],
+        y: playerY + range[i + 1],
+      };
+
+      const entity = this.grid.getEntityAt(checkPosition);
+
+      if (entity && entity instanceof Enemy) {
+        enemy = <Enemy> entity;
+        break;
+      }
+    }
+
+    if (!enemy) {
+      this.addMessage('No Enemies in Range');
+      this.printGame();
       return;
     }
 
-    // If the string did not contain a player starting position,
-    // set the starting position at the first available floor tile found by
-    // searching left-to-right, top-to-bottom (English reading order)
-    for (let row = 0; row < this.map.length; row += 1) {
-      for (let column = 0; column < this.map[row].length; column += 1) {
-        if (this.map[row][column] === Tile.FLOOR) {
-          this.player.row = row;
-          this.player.column = column;
-          return;
-        }
-      }
+    if (!this.player.equippedWeapon) {
+      this.addMessage('No Weapon Equipped');
+      this.printGame();
+      return;
     }
+
+    enemy.combatTimer = 7;
+
+    // Player attack
+    let rand = 1 + Math.floor((Math.random() * 5));
+    const SP = this.player.skill + rand + this.player.equippedWeapon.skillBonus;
+
+    if (SP > enemy.skill) {
+      // Attack hit
+      enemy.health -= this.player.equippedWeapon.damage;
+
+      this.addMessage(`${enemy.name} took ${this.player.equippedWeapon.damage} damage. ${enemy.name} has ${Math.max(enemy.health, 0)} health remaining`);
+
+      if (enemy.health <= 0) {
+        // Enemy defeated
+        this.player.skill += 1;
+        this.grid.removeEntity(enemy);
+        this.addMessage(`${enemy.name} has been defeated`);
+
+        if (this.grid.getEntities().enemies.size === 0) {
+          this.addMessage('All Enemies Defeated');
+          this.addMessage('You Win');
+          this.stopGame();
+        }
+        this.printGame();
+        return;
+      }
+    } else {
+      // Attack miss
+      this.addMessage('Attack Missed. No damage dealt');
+    }
+
+    // Enemy attack
+    rand = 1 + Math.floor((Math.random() * 5));
+    const enemySP = enemy.skill + rand;
+
+    if (enemySP > SP) {
+      // Attack hit
+      this.player.health -= enemy.damage;
+      this.addMessage(`${enemy.name} deals ${enemy.damage} damage`);
+
+      if (this.player.health <= 0) {
+        this.addMessage('You Died.\nGame Over.');
+        this.printGame();
+        this.stopGame();
+        return;
+      }
+    } else {
+      // Arrack miss
+      this.addMessage(`${enemy.name} misses. No damage dealt`);
+    }
+
+    this.postTurn();
+    this.printGame();
   }
 
-  private collision(row: number, column: number): boolean {
-    // Out of bounds collision
-    if (row < 0 || row >= this.map.length) return true;
-    if (column < 0 || column >= this.map[row].length) return true;
+  private toggleInventory(): void {
+    if (this.state === State.INVENTORY) {
+      // Close inventory
+      this.state = State.WALKING;
+    } else {
+      // Open inventory
+      this.addMessage('You look at your inventory');
+      this.state = State.INVENTORY;
+    }
 
-    // Wall collision
-    if (this.map[row][column] === Tile.WALL) return true;
+    this.printGame();
+  }
 
-    return false;
+  private selectFromInventory(index: number): void {
+    if (this.state !== State.INVENTORY) return;
+    // if (index >= this.player.inventory.weapons.length) return;
+    if (index >= this.player.inventory.inventory.length) return;
+
+    // const weapon = this.player.inventory.weapons[index];
+    const inventoryObj = this.player.inventory.inventory[index];
+
+    if (inventoryObj instanceof Weapon) {
+      const weapon = <Weapon> inventoryObj;
+
+      if (this.player.equippedWeapon === weapon) {
+        this.message += `"You already have this ${weapon.name} equipped"\n`;
+        this.printGame();
+        return;
+      }
+
+      this.player.equippedWeapon = weapon;
+
+      this.addMessage(`You equip ${Game.nounPhrase(weapon)}`);
+    } else if (inventoryObj instanceof Item) {
+      const item = <Item> inventoryObj;
+
+      this.player.health += item.effectHP;
+      this.player.skill += item.effectSP;
+      this.player.useUpItem(item);
+
+      this.message += `Use Item: ${item.name} : ${item.description}`;
+    }
+
+    this.postTurn();
+    this.printGame();
+  }
+
+  private addMessage(message: string): void {
+    this.message += `"${message}"\n`;
+  }
+
+  private postTurn(): void {
+    this.grid.getEntities().enemies.forEach((enemy) => {
+      enemy.combatTimer -= 1;
+      if (enemy.combatTimer > 0) return;
+      const { x: currentX, y: currentY } = this.grid.getPositionOf(enemy);
+      const range = [0, -1, -1, 0, 0, 1, 1, 0];
+      const randPos = Math.floor(Math.random() * 4) * 2;
+
+      const newPosition = {
+        x: currentX + range[randPos],
+        y: currentY + range[randPos + 1],
+      };
+
+      const { entity, collision } = this.grid.query(newPosition);
+
+      if (entity || collision) return;
+
+      this.grid.moveEntity(enemy, newPosition);
+    });
+  }
+
+  private printGame(): void {
+    /* eslint-disable no-console */
+    // Grid
+    console.log(this.grid.stringRepresentation());
+
+    // Player stats
+    console.log(this.player.stringRepresentation());
+
+    if (this.player.equippedWeapon) {
+      // Equpped weapon
+      console.log('Equipped weapon:', this.player.equippedWeapon.stringRepresentation());
+    }
+
+    if (this.message) {
+      // Message
+      console.log(this.message);
+      this.message = '';
+    }
+
+    if (this.state === State.INVENTORY) {
+      // Inventory
+      console.log(this.player.inventory.stringRepresentation());
+    }
+    /* eslint-enable no-console */
+  }
+
+  private static nounPhrase<Type extends { name: string }>(object: Type): string {
+    if (Game.isVowel(object.name.charAt(0))) {
+      return `an ${object.name}`;
+    }
+    return `a ${object.name}`;
+  }
+
+  private static isVowel(character: string): boolean {
+    return 'aeiou'.split('').includes(character.charAt(0).toLowerCase());
   }
 }

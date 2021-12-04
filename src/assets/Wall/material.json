@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "bricks_albedo.png",
+  "normal": "bricks_normal.png",
+  "mrao": "bricks_mrao.png"
+}
