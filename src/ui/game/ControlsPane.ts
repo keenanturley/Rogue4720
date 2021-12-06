@@ -12,6 +12,14 @@ const controls: Array<Control> = [
   { label: 'I', action: 'Toggle inventory' },
   { label: '1-9', action: 'Use inventory slot item' },
   { label: '.', action: 'Toggle debug mode' },
+  { label: ',', action: 'Toggle free camera' },
+  { label: 'h', action: 'Free camera move left' },
+  { label: 'j', action: 'Free camera move backward' },
+  { label: 'k', action: 'Free camera move forward' },
+  { label: 'l', action: 'Free camera move right' },
+  { label: '[', action: 'Free camera move down' },
+  { label: ']', action: 'Free camera move up' },
+  { label: '\\', action: 'Re-generate map (not recommended)' },
 ];
 
 export default class ControlsPane extends HTMLElement {

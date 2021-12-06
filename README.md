@@ -6,6 +6,14 @@ Made with TWGL for a class project:
 
 CAP 4720 | Computer Graphics | Fall 2021
 
+## Installation
+
+Install all the dependencies with:
+
+```
+$ npm i
+```
+
 ## Development
 
 Run the live server with:

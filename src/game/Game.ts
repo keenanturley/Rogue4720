@@ -42,10 +42,13 @@ export default class Game {
 
   private keyListener: KeyListener;
 
+  private doResetCamera: boolean;
+
   constructor(gl: WebGL2RenderingContext) {
     this.camera = new PerspectiveCamera();
     this.cameraController = new CameraController(this.camera, 3);
     this.renderer = new Renderer(gl, undefined, this.camera);
+    this.doResetCamera = true;
 
     // Attach the camera controller update to the renderer
     this.renderer.addUpdateCallback((deltaTime) => this.cameraController.update(deltaTime));
@@ -81,6 +84,8 @@ export default class Game {
           'Digit6', 'Digit7', 'Digit8', 'Digit9'],
         ({ key }: KeyboardEvent) => this.selectFromInventory(Number(key) - 1),
       ],
+      ['\\', () => this.grid.generateMap()],
+      [',', () => { this.doResetCamera = !this.doResetCamera; }],
     ]);
     this.cameraController.bindKeys(this.keyListener);
     this.keyListener.startListening();
@@ -178,8 +183,12 @@ export default class Game {
       this.grid.moveEntity(this.player, newPosition);
     }
 
-    const newCameraPosition = this.player.cameraTarget.getWorldPosition();
-    this.cameraController.moveTo(newCameraPosition);
+    if (this.doResetCamera) {
+      const newCameraPosition = this.player.cameraTarget.getWorldPosition();
+      this.cameraController.moveTo(newCameraPosition);
+      this.camera.transform.rotation = [-45, 180, 0];
+    }
+
     this.postTurn();
     this.printGame();
   }
