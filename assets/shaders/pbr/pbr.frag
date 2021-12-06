@@ -6,13 +6,15 @@ in vec2 fragUV;
 in vec3 fragPosition;
 in vec3 fragNormal;
 
+const int POINT_LIGHTS = 1;
+
 uniform sampler2D u_albedo;
 uniform sampler2D u_normal;
 uniform sampler2D u_mrao;
 uniform vec3 u_dLightDirection;
 uniform vec3 u_dLightColor;
-uniform vec3 u_pLightPositions[1];
-uniform vec3 u_pLightColors[1];
+uniform vec3 u_pLightPositions[POINT_LIGHTS];
+uniform vec3 u_pLightColors[POINT_LIGHTS];
 uniform vec3 u_eyePosition;
 
 out vec4 outColor;
@@ -177,7 +179,7 @@ void main() {
 	Lo += calcDirLight(u_dLightDirection, u_dLightColor, N, V);
 
 	// calculate each point light
-	for(int i = 0; i < 4; i++)
+	for(int i = 0; i < POINT_LIGHTS; i++)
 		Lo += calcPointLight(u_pLightPositions[i], u_pLightColors[i], N, fragPosition, V);
 	
 
