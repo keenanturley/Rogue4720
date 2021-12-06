@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "goblin.obj",
+  "material": "material.json",
+  "name": "Goblin"
+}

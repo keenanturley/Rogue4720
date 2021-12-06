@@ -1,0 +1,10 @@
+{
+  "pLightPositions": [
+    5.0, 0.5, -5.0
+  ],
+  "pLightColors": [
+    2.0, 2.0, 2.0
+  ],
+  "dLightDirection": [ -90.0, -45, 0 ],
+  "dLightColor": [ 1, 1, 1 ]
+}

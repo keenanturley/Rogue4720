@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "vampire_albedo.png",
+  "normal": "vampire_normal.png",
+  "mrao": "vampire_mrao.png"
+}

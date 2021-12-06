@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "floor_albedo.png",
+  "normal": "floor_normal.png",
+  "mrao": "floor_mrao.png"
+}

@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "ork_albedo.png",
+  "normal": "ork_normal.png",
+  "mrao": "ork_mrao.png"
+}

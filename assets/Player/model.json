@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "player.obj",
+  "material": "material.json",
+  "name": "Player"
+}

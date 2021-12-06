@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "war_hammer.obj",
+  "material": "../weapon_material.json",
+  "name": "War Hammer"
+}

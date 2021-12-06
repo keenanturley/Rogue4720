@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "player_albedo.png",
+  "normal": "player_normal.png",
+  "mrao": "player_mrao.png"
+}

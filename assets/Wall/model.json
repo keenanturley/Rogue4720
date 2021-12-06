@@ -1,0 +1,6 @@
+{
+  "type": "Model",
+  "model": "wall.obj",
+  "material": "material.json",
+  "name": "Wall Tile"
+}

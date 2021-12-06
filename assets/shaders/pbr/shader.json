@@ -1,0 +1,5 @@
+{
+  "type": "Shader",
+  "vertexShader": "pbr.vert",
+  "fragmentShader": "pbr.frag"
+}

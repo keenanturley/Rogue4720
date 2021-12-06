@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "weapon_albedo.png",
+  "normal": "weapon_normal.png",
+  "mrao": "weapon_mrao.png"
+}

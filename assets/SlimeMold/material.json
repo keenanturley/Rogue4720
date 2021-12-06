@@ -1,0 +1,6 @@
+{
+  "type": "PBRMaterial",
+  "albedo": "slime_mold_albedo.png",
+  "normal": "slime_mold_normal.png",
+  "mrao": "slime_mold_mrao.png"
+}
