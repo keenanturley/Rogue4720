@@ -2,10 +2,16 @@
   "name": "rogue4720",
   "version": "1.0.0",
   "description": "A WebGL almost-roguelite game",
+  "repository": {
+    "url": "git+https://github.com/keenanturley/Rogue4720.git"
+  },
+  "homepage": "http://keenanturley.github.io/Rogue4720",
   "scripts": {
     "start": "webpack serve --open",
     "build": "webpack",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "author": "",
   "license": "ISC",
@@ -26,6 +32,7 @@
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-airbnb-typescript": "^15.0.0",
     "eslint-plugin-import": "^2.25.2",
+    "gh-pages": "^3.2.3",
     "html-webpack-plugin": "^5.5.0",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.2.6",
