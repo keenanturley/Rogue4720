@@ -94,3 +94,14 @@ scene-panel-list-node {
     padding: 3px;
     color: rgb(0, 255, 0);
 }
+
+.minimap-panel {
+    font-size: 0.75rem;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 3px;
+    color: rgb(255, 255, 255);
+}

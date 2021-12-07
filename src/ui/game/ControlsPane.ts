@@ -11,6 +11,7 @@ const controls: Array<Control> = [
   { label: 'Q', action: 'Attack adjacent tiles' },
   { label: 'I', action: 'Toggle inventory' },
   { label: '1-9', action: 'Use inventory slot item' },
+  { label: 'M', action: 'Toggle Map' },
   { label: '.', action: 'Toggle debug mode' },
   { label: ',', action: 'Toggle free camera' },
   { label: 'h', action: 'Free camera move left' },

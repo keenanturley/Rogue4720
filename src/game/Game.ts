@@ -10,6 +10,8 @@ import PerspectiveCamera from '../renderer/PerspectiveCamera';
 import CameraController from './CameraController';
 // eslint-disable-next-line import/no-cycle
 import GamePanel from '../ui/game/GamePanel';
+// eslint-disable-next-line import/no-cycle
+import MinimapPanel from '../ui/game/MinimapPanel';
 
 export enum GameState {
   WALKING,
@@ -31,6 +33,8 @@ export default class Game {
   message: string;
 
   gamePanel: GamePanel;
+
+  minimapPanel: MinimapPanel;
 
   player: Player;
 
@@ -91,6 +95,7 @@ export default class Game {
     this.keyListener.startListening();
 
     this.gamePanel = new GamePanel(this);
+    this.minimapPanel = new MinimapPanel(this);
 
     this.message = '';
 
@@ -364,6 +369,7 @@ export default class Game {
   private printGame(): void {
     // Update the UI
     this.gamePanel.update();
+    this.minimapPanel.update();
 
     /* eslint-disable no-console */
     // Grid
