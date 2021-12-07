@@ -13,15 +13,19 @@ html, body {
 }
 
 #canvas-container {
-    width: 100vw;
-    height: 100vh;
+    flex: 10 10 100vw;
     display: flex;
+}
+
+canvas {
+    width: 100%;
 }
 
 game-panel {
     display: flex;
     flex-direction: column;
-    flex: 25rem 0 0;
+    flex: 2 2 25rem;
+    overflow-y: auto;
 }
 
 .game-pane {
