@@ -9,6 +9,8 @@ export default class Transform {
 
   scale: v3.Vec3;
 
+  private matrix: m4.Mat4;
+
   constructor(
     position: v3.Vec3 = new Float32Array([0.0, 0.0, 0.0]),
     rotation: v3.Vec3 = new Float32Array([0.0, 0.0, 0.0]),
@@ -27,13 +29,17 @@ export default class Transform {
      * Matrix = Translation * Rotation * Scale * Identity
      */
   getMatrix(): m4.Mat4 {
+    if (this.matrix) {
+      return this.matrix;
+    }
     const matrix = m4.identity();
     m4.scale(matrix, this.scale, matrix);
     m4.translate(matrix, this.position, matrix);
     m4.rotateZ(matrix, this.rotation[2], matrix);
     m4.rotateY(matrix, this.rotation[1], matrix);
     m4.rotateX(matrix, this.rotation[0], matrix);
-    return matrix;
+    this.matrix = matrix;
+    return this.matrix;
   }
 
   getForwardVector(): v3.Vec3 {
