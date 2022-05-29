@@ -87,6 +87,7 @@ scene-panel-list-node {
 
 .debug-panel {
     position: absolute;
+    white-space: pre;
     bottom: 5px;
     left: 5px;
     border: 1px solid rgba(0, 0, 0, 0.5);

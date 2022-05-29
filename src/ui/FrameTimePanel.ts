@@ -17,7 +17,8 @@ export default class FrameTimePanel {
 
     // Update the frame time 30 times per second
     this.frameTimeUpdateIntervalId = setInterval(() => {
-      this.element.innerText = `Frame time: ${this.renderer.frameTime} ms`;
+      const timeString = this.renderer.frameTime.toFixed(2).padStart(6);
+      this.element.textContent = `Frame time: ${timeString} ms`;
     }, 30 / 1000);
 
     if (module.hot) {
