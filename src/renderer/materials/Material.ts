@@ -39,6 +39,10 @@ export class Material<UniformsType extends object = object> {
     this.uniforms = uniforms;
   }
 
+  getType(): MaterialType {
+    return (this.constructor as typeof Material).type;
+  }
+
   static async load(url: string): Promise<Material> {
     if (this.cache.has(url)) {
       return this.cache.get(url);

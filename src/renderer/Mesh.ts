@@ -1,4 +1,4 @@
-import { BufferInfo, createBufferInfoFromArrays, primitives } from 'twgl.js';
+import { Arrays, BufferInfo, createBufferInfoFromArrays, primitives } from 'twgl.js';
 
 /**
  * A less-generalized Mesh representation. For simplicity we are sticking with
@@ -36,9 +36,11 @@ export default class Mesh {
 
   indices?: primitives.TypedArray;
 
-  bufferInfo?: BufferInfo;
-
   name: string;
+
+  private bufferInfo?: BufferInfo;
+
+  private arrays?: Arrays;
 
   constructor(
     position: primitives.TypedArray,
@@ -54,7 +56,21 @@ export default class Mesh {
     this.name = name;
   }
 
-  createArrays() {
+  getArrays() {
+    if (!this.arrays) {
+      this.arrays = this.createArrays();
+    }
+    return this.arrays;
+  }
+
+  getBufferInfo(gl): BufferInfo {
+    if (!this.bufferInfo) {
+      this.bufferInfo = createBufferInfoFromArrays(gl, this.createArrays());
+    }
+    return this.bufferInfo;
+  }
+
+  private createArrays() {
     return {
       position: {
         numComponents: Mesh.NUM_COMPONENTS_POSITION,
@@ -79,12 +95,5 @@ export default class Mesh {
         },
       }),
     };
-  }
-
-  getBufferInfo(gl): BufferInfo {
-    if (!this.bufferInfo) {
-      this.bufferInfo = createBufferInfoFromArrays(gl, this.createArrays());
-    }
-    return this.bufferInfo;
   }
 }

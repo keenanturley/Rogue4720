@@ -1,13 +1,20 @@
 import {
-  drawBufferInfo, m4, resizeCanvasToDisplaySize, setBuffersAndAttributes, setUniforms,
+  createBufferInfoFromArrays,
+  drawBufferInfo, m4, resizeCanvasToDisplaySize, setBuffersAndAttributes, setUniforms, primitives, createVertexArrayInfo,
 } from 'twgl.js';
 import Camera from './Camera';
+import { Material, MaterialType } from './materials/Material';
+import Mesh from './Mesh';
 import MeshNode from './MeshNode';
+import ModelNode from './ModelNode';
 import PerspectiveCamera from './PerspectiveCamera';
 import Scene from './Scene';
 import SceneNode from './SceneNode';
+import Shader from './Shader';
 
 export type UpdateCallback = (deltaTime?: number) => void;
+
+type MeshNodeInstanceData = { node: MeshNode, matrix: m4.Mat4 };
 
 export default class Renderer {
   gl: WebGL2RenderingContext;
@@ -18,14 +25,16 @@ export default class Renderer {
 
   rendererUniforms: object;
 
-  private animationRequestId;
-
-  private previousTime;
-
   updateCallbacks: Set<UpdateCallback> = new Set();
 
   // Time in ms the last frame took to render
   frameTime: number = 0;
+
+  private animationRequestId;
+
+  private previousTime;
+
+  private renderMap: Map<Shader, Map<Mesh, Array<MeshNodeInstanceData>>>;
 
   constructor(
     gl: WebGL2RenderingContext,
@@ -35,6 +44,8 @@ export default class Renderer {
     this.gl = gl;
     this.scene = scene;
     this.camera = camera;
+
+    this.renderMap = new Map();
 
     // Content initialization
     gl.clearColor(0.2, 0.075, 0.0, 1.0);
@@ -52,45 +63,114 @@ export default class Renderer {
       u_resolution: [this.gl.canvas.width, this.gl.canvas.height],
     };
 
-    this.drawNode(this.scene.root, m4.identity());
+    this.renderMap.clear();
+    this.processNode(this.scene.root, m4.identity());
+
+    // Render from renderMap (for each material type)
+    this.renderMap.forEach((meshMap, shader) => {
+      // each unique mesh
+      meshMap.forEach((meshNodeInstances, mesh) => {
+        if (!meshNodeInstances) {
+          return;
+        }
+        const programInfo = shader.getProgramInfo(this.gl);
+        this.gl.useProgram(programInfo.program);
+
+        // Compute matrix
+        const cameraMatrix = this.camera.getViewProjectionMatrix();
+        const eyePosition = m4.inverse(this.camera.getViewMatrix()).slice(12, 15);
+
+        const templateNode = meshNodeInstances[0].node;
+
+        // Set all uniforms
+        setUniforms(programInfo, [
+          this.rendererUniforms,
+          templateNode.material.uniforms,
+          {
+            u_eyePosition: eyePosition,
+            u_cameraMatrix: cameraMatrix,
+          },
+        ]);
+
+        const matrices = new Float32Array(16 * meshNodeInstances.length);
+
+        meshNodeInstances.forEach((instance, i) => matrices.set(instance.matrix, i * 16));
+
+        const arrays = {
+          ...mesh.getArrays(),
+          a_matrix: {
+            numComponents: 16,
+            data: matrices,
+            divisor: 1,
+          },
+        };
+        const bufferInfo = createBufferInfoFromArrays(this.gl, arrays);
+        const vertexArrayInfo = createVertexArrayInfo(this.gl, programInfo, bufferInfo);
+
+        setBuffersAndAttributes(this.gl, programInfo, vertexArrayInfo);
+
+        drawBufferInfo(
+          this.gl,
+          vertexArrayInfo,
+          this.gl.TRIANGLES,
+          vertexArrayInfo.numElements,
+          0,
+          meshNodeInstances.length,
+        );
+      });
+    });
   }
 
-  drawNode(node: SceneNode, parentMatrix: m4.Mat4) {
+  processNode(node: SceneNode, parentMatrix: m4.Mat4) {
     // Compute this node's matrix
     let matrix = node.localTransform.getMatrix();
     matrix = m4.multiply(parentMatrix, matrix);
 
-    // Draw self
+    // Process self
     if (node instanceof MeshNode) {
-      // Get the mesh's buffer info
-      const bufferInfo = node.mesh.getBufferInfo(this.gl);
+      const { shader } = node.material;
+      if (!this.renderMap.has(shader)) {
+        this.renderMap.set(shader, new Map());
+      }
+      const shaderMeshMap = this.renderMap.get(shader);
 
-      const programInfo = node.material.shader.getProgramInfo(this.gl);
-      this.gl.useProgram(programInfo.program);
-
-      setBuffersAndAttributes(this.gl, programInfo, bufferInfo);
-
-      // Set uniforms
-      setUniforms(programInfo, node.material.uniforms);
-      setUniforms(programInfo, this.rendererUniforms);
-
-      // Compute matrix
-      const cameraMatrix = this.camera.getViewProjectionMatrix();
-      const projectedMatrix = m4.multiply(this.camera.getViewProjectionMatrix(), matrix);
-      const eyePosition = m4.inverse(this.camera.getViewMatrix()).slice(12, 15);
-      setUniforms(programInfo, {
-        u_matrix: projectedMatrix,
-        u_modelMatrix: matrix,
-        u_eyePosition: eyePosition,
-        u_cameraMatrix: cameraMatrix,
-      });
-
-      // Render
-      drawBufferInfo(this.gl, bufferInfo);
+      if (!shaderMeshMap.has(node.mesh)) {
+        shaderMeshMap.set(node.mesh, new Array<MeshNodeInstanceData>());
+      }
+      const meshNodeInstances = shaderMeshMap.get(node.mesh);
+      meshNodeInstances.push({ node, matrix });
     }
 
-    // Draw all children
-    node.getChildren().forEach((child) => this.drawNode(child, matrix));
+    // if (node instanceof MeshNode) {
+    //   // Get the mesh's buffer info
+    //   const bufferInfo = node.mesh.getBufferInfo(this.gl);
+
+    //   const programInfo = node.material.shader.getProgramInfo(this.gl);
+    //   this.gl.useProgram(programInfo.program);
+
+    //   setBuffersAndAttributes(this.gl, programInfo, bufferInfo);
+
+    //   // Compute matrix
+    //   const cameraMatrix = this.camera.getViewProjectionMatrix();
+    //   const projectedMatrix = m4.multiply(this.camera.getViewProjectionMatrix(), matrix);
+    //   const eyePosition = m4.inverse(this.camera.getViewMatrix()).slice(12, 15);
+
+    //   // Set all uniforms
+    //   setUniforms(programInfo, [
+    //     this.rendererUniforms,
+    //     node.material.uniforms,
+    //     {
+    //       u_eyePosition: eyePosition,
+    //       u_cameraMatrix: cameraMatrix,
+    //     },
+    //   ]);
+
+    //   // Render
+    //   drawBufferInfo(this.gl, bufferInfo);
+    // }
+
+    // Process all children
+    node.getChildren().forEach((child) => this.processNode(child, matrix));
   }
 
   addUpdateCallback(callback: UpdateCallback): void {
