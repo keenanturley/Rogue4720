@@ -1,4 +1,6 @@
-import { Arrays, BufferInfo, createBufferInfoFromArrays, primitives } from 'twgl.js';
+import {
+  Arrays, BufferInfo, createBufferInfoFromArrays, primitives,
+} from 'twgl.js';
 
 /**
  * A less-generalized Mesh representation. For simplicity we are sticking with

@@ -1,12 +1,15 @@
 import {
   createBufferInfoFromArrays,
-  drawBufferInfo, m4, resizeCanvasToDisplaySize, setBuffersAndAttributes, setUniforms, primitives, createVertexArrayInfo,
+  drawBufferInfo,
+  m4,
+  resizeCanvasToDisplaySize,
+  setBuffersAndAttributes,
+  setUniforms,
+  createVertexArrayInfo,
 } from 'twgl.js';
 import Camera from './Camera';
-import { Material, MaterialType } from './materials/Material';
 import Mesh from './Mesh';
 import MeshNode from './MeshNode';
-import ModelNode from './ModelNode';
 import PerspectiveCamera from './PerspectiveCamera';
 import Scene from './Scene';
 import SceneNode from './SceneNode';
