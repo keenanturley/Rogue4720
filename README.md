@@ -6,6 +6,12 @@ Made with TWGL for a class project:
 
 CAP 4720 | Computer Graphics | Fall 2021
 
+## NOTE
+
+To view the project from the state it was presented in, check out the `v1` branch.
+
+The `main` branch has improvements made after the fact, for fun!
+
 ## Installation
 
 Install all the dependencies with:
