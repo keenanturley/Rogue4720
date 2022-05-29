@@ -1,5 +1,5 @@
 import { m4 } from 'twgl.js';
-import toRadians from '../util/Math';
+import { toRadians } from '../util/Math';
 import Camera from './Camera';
 import Transform from './Transform';
 

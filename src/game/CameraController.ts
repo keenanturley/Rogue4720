@@ -1,5 +1,6 @@
-import { v3, m4 } from 'twgl.js';
+import { v3 } from 'twgl.js';
 import Camera from '../renderer/Camera';
+import { toRadians } from '../util/Math';
 import KeyListener, { KeyPressType } from './KeyListener';
 
 interface CameraInputs {
@@ -65,7 +66,7 @@ export default class CameraController {
     // Units per second
     public moveSpeed: number = 1.0,
     // Degrees per second
-    public lookSensitivity: number = 1.0,
+    public lookSensitivity: number = toRadians(1.0),
     public activeInputs = CameraController.defaultInputs,
   ) {}
 
@@ -132,12 +133,15 @@ export default class CameraController {
   private rotate(rotations: [number, number]) {
     const { rotation } = this.camera.transform;
 
+    const maxX = toRadians(90);
+    const minX = toRadians(-90);
+
     rotation[0] += rotations[0];
     // Clamp X
-    if (rotation[0] > 90) {
-      rotation[0] = 90;
-    } else if (rotation[0] < -90) {
-      rotation[0] = -90;
+    if (rotation[0] > maxX) {
+      rotation[0] = maxX;
+    } else if (rotation[0] < minX) {
+      rotation[0] = minX;
     }
 
     rotation[1] += rotations[1];

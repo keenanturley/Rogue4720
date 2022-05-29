@@ -4,7 +4,7 @@ import Item from './Item';
 import Inventory from '../Inventory';
 import Model from '../../renderer/Model';
 import SceneNode from '../../renderer/SceneNode';
-import toRadians from '../../util/Math';
+import { toRadians } from '../../util/Math';
 import Transform from '../../renderer/Transform';
 
 const model = await Model.load('/assets/Player/model.json');
