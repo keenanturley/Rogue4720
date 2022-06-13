@@ -107,7 +107,20 @@ export default class Renderer {
             divisor: 1,
           },
         };
-        const bufferInfo = createBufferInfoFromArrays(this.gl, arrays);
+
+        // Precompute numElements for BufferInfo object to prevent TWGL GL Calls
+        let numElements: number;
+        if (mesh.indices) {
+          numElements = mesh.indices.length / 3;
+        } else {
+          numElements = mesh.position.length / 3;
+        }
+
+        const bufferInfo = createBufferInfoFromArrays(
+          this.gl,
+          arrays,
+          { numElements },
+        );
         const vertexArrayInfo = createVertexArrayInfo(this.gl, programInfo, bufferInfo);
 
         setBuffersAndAttributes(this.gl, programInfo, vertexArrayInfo);
