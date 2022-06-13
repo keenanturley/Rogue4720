@@ -63,7 +63,7 @@ export default class SceneNode {
 
   // Traverses to root if ancestor is null
   getAncestorPosition(ancestor: SceneNode): v3.Vec3 {
-    const nodeStack = [];
+    const nodeStack = new Array<SceneNode>();
     let node: SceneNode = this;
     // The root will always be found
     let ancestorFound = ancestor === null;
@@ -81,13 +81,13 @@ export default class SceneNode {
     if (!ancestorFound) return null;
 
     // The stack will always at least have 1
-    let { position } = nodeStack.pop().localTransform;
+    const transform = Transform.copy(nodeStack.pop().localTransform);
     while (nodeStack.length > 0) {
       node = nodeStack.pop();
-      position = v3.add(position, node.localTransform.position);
+      transform.setPosition(v3.add(transform.getPosition(), node.localTransform.getPosition()));
     }
 
-    return position;
+    return transform.getPosition();
   }
 
   getWorldPosition(): v3.Vec3 {

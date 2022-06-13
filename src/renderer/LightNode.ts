@@ -29,7 +29,7 @@ export default class LightNode extends SceneNode {
       case Type.directional:
         computedName = 'directionalLightNode';
         computedTransform = new Transform();
-        computedTransform.rotation = v3.create(...coordinateOrDirection);
+        computedTransform.setRotationDeg(v3.create(...coordinateOrDirection));
         break;
       case Type.point:
         computedName = `pointLightNode#${LightNode.numPointLights}`;

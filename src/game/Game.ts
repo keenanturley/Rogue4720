@@ -1,4 +1,3 @@
-import { v3 } from 'twgl.js';
 import KeyListener from './KeyListener';
 import Grid from './Grid';
 import Player from './entities/Player';
@@ -64,7 +63,7 @@ export default class Game {
     this.grid = new Grid(this.renderer.scene);
     this.player = this.grid.getPlayer();
     this.cameraController.moveTo(this.player.cameraTarget.getWorldPosition());
-    this.camera.transform.setRotationDeg(-45, 180, 0);
+    this.camera.transform.setRotationDeg([-45, 180, 0]);
 
     this.state = GameState.WALKING;
 
@@ -123,19 +122,19 @@ export default class Game {
     let deltaY = 0;
     switch (dir) {
       case MoveDirection.Forward:
-        this.player.modelNode.localTransform.setRotationDeg(0, 0, 0);
+        this.player.modelNode.localTransform.setRotationDeg([0, 0, 0]);
         deltaY = 1;
         break;
       case MoveDirection.Backward:
-        this.player.modelNode.localTransform.setRotationDeg(0, 180, 0);
+        this.player.modelNode.localTransform.setRotationDeg([0, 180, 0]);
         deltaY = -1;
         break;
       case MoveDirection.Left:
-        this.player.modelNode.localTransform.setRotationDeg(0, 90, 0);
+        this.player.modelNode.localTransform.setRotationDeg([0, 90, 0]);
         deltaX = 1;
         break;
       case MoveDirection.Right:
-        this.player.modelNode.localTransform.setRotationDeg(0, -90, 0);
+        this.player.modelNode.localTransform.setRotationDeg([0, -90, 0]);
         deltaX = -1;
         break;
       default:
@@ -191,17 +190,11 @@ export default class Game {
     if (this.doResetCamera) {
       const newCameraPosition = this.player.cameraTarget.getWorldPosition();
       this.cameraController.moveTo(newCameraPosition);
-      this.camera.transform.setRotationDeg(-45, 180, 0);
+      this.camera.transform.setRotationDeg([-45, 180, 0]);
     }
 
     this.postTurn();
     this.printGame();
-  }
-
-  private moveCamera(translation: v3.Vec3) {
-    const { position } = this.renderer.camera.transform;
-    v3.add(position, translation, position);
-    return position;
   }
 
   private attack() : void {

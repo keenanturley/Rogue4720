@@ -2,14 +2,16 @@ import { m4, v3 } from 'twgl.js';
 import { toRadians, toDegrees } from '../util/Math';
 
 export default class Transform {
-  position: v3.Vec3;
+  private position: v3.Vec3;
 
   // In radians
-  rotation: v3.Vec3;
+  private rotation: v3.Vec3;
 
-  scale: v3.Vec3;
+  private scale: v3.Vec3;
 
   private matrix: m4.Mat4;
+
+  private bDirtyMatrix: boolean;
 
   constructor(
     position: v3.Vec3 = new Float32Array([0.0, 0.0, 0.0]),
@@ -19,6 +21,16 @@ export default class Transform {
     this.position = position;
     this.rotation = rotation;
     this.scale = scale;
+    this.bDirtyMatrix = false;
+  }
+
+  // Workaround for lack of copy constructor
+  static copy(sourceTransform: Transform): Transform {
+    return new Transform(
+      new Float32Array(sourceTransform.position),
+      new Float32Array(sourceTransform.rotation),
+      new Float32Array(sourceTransform.scale),
+    );
   }
 
   /**
@@ -29,7 +41,7 @@ export default class Transform {
      * Matrix = Translation * Rotation * Scale * Identity
      */
   getMatrix(): m4.Mat4 {
-    if (this.matrix) {
+    if (!this.bDirtyMatrix && this.matrix) {
       return this.matrix;
     }
     const matrix = m4.identity();
@@ -39,7 +51,26 @@ export default class Transform {
     m4.rotateY(matrix, this.rotation[1], matrix);
     m4.rotateX(matrix, this.rotation[0], matrix);
     this.matrix = matrix;
+    this.bDirtyMatrix = false;
     return this.matrix;
+  }
+
+  getPosition(): v3.Vec3 {
+    return this.position;
+  }
+
+  setPosition(position: v3.Vec3) {
+    this.position = position;
+    this.bDirtyMatrix = true;
+  }
+
+  getScale(): v3.Vec3 {
+    return this.scale;
+  }
+
+  setScale(scale: v3.Vec3) {
+    this.scale = scale;
+    this.bDirtyMatrix = true;
   }
 
   getForwardVector(): v3.Vec3 {
@@ -69,12 +100,18 @@ export default class Transform {
     return m4.transformDirection(matrix, up);
   }
 
-  setRotationDeg(x: number, y: number, z: number) {
-    this.rotation = [toRadians(x), toRadians(y), toRadians(z)];
+  setRotationDeg(rotationDeg: v3.Vec3) {
+    this.rotation = [
+      toRadians(rotationDeg[0]),
+      toRadians(rotationDeg[1]),
+      toRadians(rotationDeg[2]),
+    ];
+    this.bDirtyMatrix = true;
   }
 
-  setRotationRad(x: number, y: number, z: number) {
-    this.rotation = [x, y, z];
+  setRotationRad(rotationRad: v3.Vec3) {
+    this.rotation = rotationRad;
+    this.bDirtyMatrix = true;
   }
 
   getRotationRad(): v3.Vec3 {

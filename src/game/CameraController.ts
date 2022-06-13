@@ -70,9 +70,7 @@ export default class CameraController {
     public activeInputs = CameraController.defaultInputs,
   ) {}
 
-  update(deltaTime: number) {
-    // console.log(`Camera Update: ${this.direction.toString()}`);
-
+  public update(deltaTime: number) {
     const moveVector = this.getMoveVector();
     const moveDistance = this.moveSpeed * (deltaTime / 1000);
     this.move(v3.mulScalar(moveVector, moveDistance));
@@ -96,12 +94,13 @@ export default class CameraController {
   }
 
   private move(translation: v3.Vec3) {
-    const { position } = this.camera.transform;
-    v3.add(position, translation, position);
+    const { transform } = this.camera;
+    const newPosition = v3.add(transform.getPosition(), translation);
+    this.moveTo(newPosition);
   }
 
   moveTo(position: v3.Vec3) {
-    this.camera.transform.position = position;
+    this.camera.transform.setPosition(position);
   }
 
   private getMoveVector(): v3.Vec3 {
@@ -131,7 +130,7 @@ export default class CameraController {
   }
 
   private rotate(rotations: [number, number]) {
-    const { rotation } = this.camera.transform;
+    const rotation = this.camera.transform.getRotationRad();
 
     const maxX = toRadians(90);
     const minX = toRadians(-90);
@@ -145,6 +144,7 @@ export default class CameraController {
     }
 
     rotation[1] += rotations[1];
+    this.camera.transform.setRotationRad(rotation);
   }
 
   private getRotations(): [number, number] {

@@ -38,7 +38,7 @@ export default class Player extends Entity {
     let maxLen = xLen;
     if (maxLen < yLen) maxLen = yLen;
     if (maxLen < zLen) maxLen = zLen;
-    this.modelNode.localTransform.scale = [1 / maxLen, 1 / maxLen, 1 / maxLen];
+    this.modelNode.localTransform.setScale([1 / maxLen, 1 / maxLen, 1 / maxLen]);
     this.cameraTarget = new SceneNode(
       'Player Camera Target',
       new Transform([
